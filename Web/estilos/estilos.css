@@ -1,0 +1,473 @@
+/* ================= RESET & BASE ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #b9b7f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ================= CONTENEDOR GENERAL ================= */
+.app-card {
+  background: white;
+  border-radius: 30px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+  overflow: hidden;
+}
+
+/* ================= ELEMENTOS REUTILIZABLES ================= */
+.input {
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #f5f6fb;
+  font-size: 14px;
+}
+
+.input:focus {
+  outline: 2px solid #6c63ff;
+}
+
+.btn-primary {
+  padding: 14px;
+  background: #6c63ff;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #584ff5;
+}
+
+.text-muted {
+  font-size: 13px;
+  color: #777;
+}
+
+/* ========================================================= */
+/* ========================== LOGIN ======================== */
+/* ========================================================= */
+
+#login-container {
+  width: 900px;
+  height: 520px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Panel izquierdo */
+#login-left {
+  background: linear-gradient(135deg, #6c63ff, #a7a2ff);
+  color: white;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#login-left h1 {
+  font-size: 42px;
+  margin-bottom: 15px;
+}
+
+#login-left p {
+  opacity: .9;
+}
+
+/* Panel derecho */
+#login-right {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#login-right h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ========================================================= */
+/* =========================== CHAT ======================== */
+/* ========================================================= */
+
+#chat-container {
+  width: 1200px;
+  height: 750px;
+  display: grid;
+  grid-template-columns: 80px 300px 1fr 300px;
+}
+
+/* ---------- Sidebar ---------- */
+#chat-sidebar {
+  background: #111218;
+  color: white;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.sidebar-item {
+  width: 50px;
+  height: 50px;
+  background: #1f2130;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar-item.active {
+  background: #6c63ff;
+}
+
+/* ---------- Lista de chats ---------- */
+#chat-list {
+  background: #f5f6fb;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.chat-item {
+  background: white;
+  border-radius: 15px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.chat-item.active {
+  border: 2px solid #6c63ff;
+}
+
+.chat-item h4 {
+  font-size: 14px;
+}
+
+.chat-item p {
+  font-size: 12px;
+  color: #777;
+}
+
+/* ---------- Chat principal ---------- */
+#chat-main {
+  display: flex;
+  flex-direction: column;
+}
+
+#chat-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+#chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  background: #f0f1fa;
+  padding: 12px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  max-width: 70%;
+}
+
+.message.own {
+  background: #6c63ff;
+  color: white;
+  margin-left: auto;
+}
+
+/* ---------- Input chat ---------- */
+#chat-input {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #eee;
+}
+
+/* ---------- Panel derecho ---------- */
+#chat-info {
+  background: #f5f6fb;
+  padding: 20px;
+}
+
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: #7b6cff;
+  min-height: 100vh;
+}
+
+/* ================= APP LAYOUT ================= */
+#app {
+  width: 95%;
+  max-width: 1400px;
+  height: 90vh;
+  margin: 5vh auto;
+  background: #ffffff;
+  border-radius: 24px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,.2);
+}
+
+/* ================= SIDEBAR ================= */
+#sidebar {
+  width: 260px;
+  background: #f9f9fb;
+  border-right: 1px solid #eee;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar-logo {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.logo-text {
+  color: #6c63ff;
+}
+
+/* Navegación */
+#sidebar-nav {
+  flex: 1;
+}
+
+.nav-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+  margin: 20px 0 10px;
+}
+
+.nav-section {
+  list-style: none;
+}
+
+.nav-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.nav-item:hover {
+  background: #ecebff;
+}
+
+.nav-item.active {
+  background: #6c63ff;
+  color: white;
+}
+
+/* ================= MAIN LAYOUT ================= */
+#main-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= TOPBAR ================= */
+#topbar {
+  height: 70px;
+  border-bottom: 1px solid #eee;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#search-container {
+  width: 360px;
+}
+
+#search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: #f3f3f7;
+}
+
+#search-input:focus {
+  outline: 2px solid #6c63ff;
+}
+
+#topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#create-btn {
+  background: #6c63ff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+#user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+/* ================= CONTENT ================= */
+#content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  overflow: hidden;
+}
+
+/* ================= FEED ================= */
+#feed {
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.post {
+  display: flex;
+  gap: 20px;
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.post-votes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.vote {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.vote-count {
+  font-weight: 600;
+}
+
+.post-body {
+  flex: 1;
+}
+
+.post-title {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.post-meta {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.post-text {
+  font-size: 14px;
+  margin-bottom: 14px;
+  color: #333;
+}
+
+.post-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.post-action {
+  background: #f0f0f5;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ================= RIGHT PANEL ================= */
+#right-panel {
+  background: #f9f9fb;
+  border-left: 1px solid #eee;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.panel-section {
+  margin-bottom: 30px;
+}
+
+.panel-title {
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+.panel-item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: white;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.panel-item:hover {
+  background: #ecebff;
+}
+
+.panel-item-title {
+  font-size: 14px;
+}
+
+.panel-item-meta {
+  font-size: 12px;
+  color: #777;
+}
+
+.input-error {
+  border: 2px solid #e74c3c;
+}
+
+.error-msg {
+  color: #e74c3c;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+

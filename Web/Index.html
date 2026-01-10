@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Índice</title>
+  <link rel="stylesheet" href="estilos/estilos.css">
+  <link rel="icon" href="php/estilos/imagenes/Game-logo.png">
+</head>
+<body>
+<!--- BOCETO DE LO QUE QUIERO HACER-->
+<div id="app">
+
+  <!-- ========== SIDEBAR IZQUIERDA ========== -->
+  <aside id="sidebar">
+
+    <div id="sidebar-logo">
+      <span class="logo-text">slothit</span>
+    </div>
+
+    <nav id="sidebar-nav">
+
+      <ul class="nav-section">
+        <li class="nav-item active">Home</li>
+        <li class="nav-item">Popular</li>
+        <li class="nav-item">All</li>
+      </ul>
+
+      <div class="nav-title">Moderation</div>
+      <ul class="nav-section">
+        <li class="nav-item">ModQ</li>
+        <li class="nav-item">ModQueue</li>
+        <li class="nav-item">Reports</li>
+      </ul>
+
+      <div class="nav-title">Recent</div>
+      <ul class="nav-section">
+        <li class="nav-item">Saved</li>
+        <li class="nav-item">Upvoted</li>
+        <li class="nav-item">Downvoted</li>
+        <li class="nav-item">History</li>
+      </ul>
+
+    </nav>
+
+  </aside>
+
+  <!-- ========== CONTENIDO PRINCIPAL ========== -->
+  <div id="main-layout">
+
+    <!-- ===== HEADER SUPERIOR ===== -->
+    <header id="topbar">
+
+      <div id="search-container">
+        <input id="search-input" type="text" placeholder="Search stories">
+      </div>
+
+      <div id="topbar-actions">
+        <button id="create-btn">Create</button>
+        <div id="user-avatar"></div>
+      </div>
+
+    </header>
+
+    <!-- ===== CUERPO ===== -->
+    <div id="content">
+
+      <!-- ==== FEED CENTRAL ==== -->
+      <main id="feed">
+
+        <!-- Post -->
+        <article class="post">
+
+          <div class="post-votes">
+            <button class="vote up">▲</button>
+            <span class="vote-count">27</span>
+            <button class="vote down">▼</button>
+          </div>
+
+          <div class="post-body">
+            <h2 class="post-title">
+              Guy with four of his lights gets the courage to ask for the coffee
+            </h2>
+
+            <p class="post-meta">
+              Posted by <span class="post-author">u/something</span> · 3 hours ago
+            </p>
+
+            <p class="post-text">
+              This is a short preview of the content. The rest of the story
+              continues after clicking.
+            </p>
+
+            <div class="post-actions">
+              <button class="post-action">💬 14</button>
+              <button class="post-action">↗ Share</button>
+              <button class="post-action">💾 Save</button>
+            </div>
+          </div>
+
+        </article>
+
+        <!-- Otro Post -->
+        <article class="post">
+          <div class="post-votes">
+            <button class="vote up">▲</button>
+            <span class="vote-count">19</span>
+            <button class="vote down">▼</button>
+          </div>
+
+          <div class="post-body">
+            <h2 class="post-title">Best names for dogs?</h2>
+            <p class="post-meta">Posted by u/example · 1 day ago</p>
+            <div class="post-actions">
+              <button class="post-action">💬 9</button>
+              <button class="post-action">↗ Share</button>
+            </div>
+          </div>
+        </article>
+
+      </main>
+
+      <!-- ==== COLUMNA DERECHA ==== -->
+      <aside id="right-panel">
+
+        <section class="panel-section">
+          <h3 class="panel-title">Recent Posts</h3>
+
+          <div class="panel-item">
+            <p class="panel-item-title">Guy with four of his lights</p>
+            <span class="panel-item-meta">r/funny</span>
+          </div>
+
+          <div class="panel-item">
+            <p class="panel-item-title">Best memes for gym</p>
+            <span class="panel-item-meta">r/memes</span>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h3 class="panel-title">Trending</h3>
+
+          <div class="panel-item">
+            <p class="panel-item-title">Apple Vision Pro</p>
+            <span class="panel-item-meta">r/technology</span>
+          </div>
+
+          <div class="panel-item">
+            <p class="panel-item-title">SpaceX launch</p>
+            <span class="panel-item-meta">r/space</span>
+          </div>
+        </section>
+
+      </aside>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
