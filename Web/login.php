@@ -1,3 +1,15 @@
+<?php
+session_start();
+if (isset($_SESSION['id_usuario'])) {
+  header("Location: index.php");
+  exit();
+}
+$showError = isset($_GET['error']);
+$registroOk = (isset($_GET['registro']) && $_GET['registro'] === 'ok');
+?>
+
+<!--==========================================================-->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,35 +20,37 @@
 </head>
 <body>
 
-<div id="login-container" class="app-card">
+  <div id="login-container" class="app-card">
 
-  <section id="login-left">
-    <h1>Bienvenido</h1>
-    <p>Inicia sesión para acceder a nuestra web.</p>
-  </section>
+    <section id="login-left">
+      <h1>Bienvenido</h1>
+      <p>Inicia sesión para acceder a nuestra web.</p>
+    </section>
 
-  <section id="login-right">
-    <h2>Iniciar sesión</h2>
+    <section id="login-right">
+      <h2>Iniciar sesión</h2>
 
-    <!-- MENSAJE DE ERROR -->
-    <p id="error-msg" class="error-msg" style="display:none;">
-      Usuario o contraseña incorrectos
-    </p>
+      <?php if ($registroOk): ?>
+        <p class="ok-msg">Registro completado. Ya puedes iniciar sesión ✅</p>
+      <?php endif; ?>
 
-    <form id="login-form" action="php/login_process.php" method="post">
-      <input id="usuario" class="input" type="text" name="usuario" placeholder="Usuario">
-      <input id="contrasena" class="input" type="password" name="contrasena" placeholder="Contraseña">
-      <button class="btn-primary" type="submit">Entrar</button>
-    </form>
+      <?php if ($showError): ?>
+        <p class="error-msg">Usuario o contraseña incorrectos</p>
+      <?php endif; ?>
 
-    <p class="text-muted" style="margin-top:20px">
-      ¿No tienes cuenta? <a href="registro.php">Regístrate</a>
-    </p>
-  </section>
+      <form id="login-form" action="php/login_process.php" method="post">
+        <input id="usuario" class="input" type="text" name="usuario" placeholder="Usuario">
+        <input id="contrasena" class="input" type="password" name="contrasena" placeholder="Contraseña">
+        <button class="btn-primary" type="submit">Entrar</button>
+      </form>
 
-</div>
+      <p class="text-muted" style="margin-top:20px">
+        ¿No tienes cuenta? <a href="registro.php">Regístrate</a>
+      </p>
+    </section>
 
-<!-- JS -->
-<script src="js/login.js"></script>
-</body>
+  </div>
+
+  <script src="js/login.js"></script>
+  </body>
 </html>
