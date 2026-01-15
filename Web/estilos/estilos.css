@@ -542,4 +542,402 @@ body {
   background:#ccc; 
 }
 
+/* ================= BOTÓN CHAT ================= */
+
+.btn-chat {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #6c63ff;
+  color: white;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-chat:hover {
+  background: #333;
+}
+
+/* =========================================================
+   CHAT (PEGAR TODO ESTE BLOQUE Y NADA MÁS DEL CHAT)
+   ========================================================= */
+
+/* reset SOLO dentro del chat para que no lo rompa tu CSS global */
+.chat, .chat * { box-sizing: border-box; }
+.chat a { color: inherit; text-decoration: none; }
+.chat a:visited { color: inherit; }
+.chat button { font-family: inherit; }
+.chat h2, .chat h3, .chat p { margin: 0; }
+
+/* colores (morado de tu web + azul para botones) */
+:root{
+  --chat-morado: #6c63ff;
+  --chat-morado-oscuro: #584ff5;
+  --chat-azul: #6c63ff;
+  --chat-azul-oscuro: #584ff5;
+
+  --chat-panel: #ffffff;
+  --chat-borde: rgba(15, 23, 42, 0.12);
+  --chat-sombra: 0 18px 40px rgba(0,0,0,.12);
+  --chat-texto: #111827;
+  --chat-muted: rgba(17,24,39,.65);
+}
+
+/* fondo con contraste */
+body{
+  background:
+    radial-gradient(1100px 520px at 20% 10%, rgba(108,99,255,.28), transparent 55%),
+    radial-gradient(900px 460px at 85% 20%, rgba(59,130,246,.18), transparent 55%),
+    linear-gradient(180deg, #f7f8ff, #eef2ff);
+}
+
+/* contenedor */
+.chat{
+  width: 95%;
+  max-width: 1320px;
+  margin: 18px auto;
+  padding: 12px;
+}
+
+/* layout izquierda + derecha */
+.chat__layout{
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* altura normal */
+.chat__side,
+.chat__main{
+  height: 78vh;
+  min-height: 560px;
+  max-height: 820px;
+}
+
+/* sidebar izquierda (más pequeña) */
+.chat__side{
+  width: 320px;
+  flex: 0 0 320px;
+  background: var(--chat-panel);
+  border: 1px solid var(--chat-borde);
+  border-radius: 18px;
+  box-shadow: var(--chat-sombra);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* botones arriba de la lista */
+.chat__sideTop{
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid rgba(15,23,42,.08);
+  background: linear-gradient(90deg, rgba(108,99,255,.12), rgba(59,130,246,.10));
+}
+
+.chat__sideBtn{
+  flex: 1;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--chat-azul);
+  color: #fff;
+  font-weight: 800;
+}
+
+.chat__sideBtn:hover{
+  background: var(--chat-azul-oscuro);
+}
+
+/* lista scroll */
+.chat__panel{
+  padding: 12px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.chat__panel h3{
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .2px;
+  color: rgba(17,24,39,.75);
+  margin: 10px 0;
+}
+
+/* item usuario/grupo */
+.chat__item{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+}
+
+.chat__item:hover{
+  background: rgba(59,130,246,.08);
+  border-color: rgba(59,130,246,.18);
+}
+
+.chat__item--activo{
+  background: rgba(108,99,255,.14);
+  border-color: rgba(108,99,255,.30);
+  position: relative;
+}
+
+.chat__item--activo::before{
+  content:"";
+  position:absolute;
+  left:-1px;
+  top:10px;
+  bottom:10px;
+  width: 6px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--chat-morado), var(--chat-azul));
+}
+
+/* avatar en lista */
+.chat__avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: rgba(108,99,255,.18);
+  border: 1px solid rgba(108,99,255,.25);
+  flex: 0 0 auto;
+}
+
+/* textos lista */
+.chat__itemName{
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--chat-texto);
+  line-height: 1.1;
+}
+.chat__itemSub{
+  font-size: 12px;
+  color: var(--chat-muted);
+  margin-top: 2px;
+}
+
+/* panel chat derecha (más grande) */
+.chat__main{
+  flex: 1;
+  min-width: 0;
+  background: var(--chat-panel);
+  border: 1px solid var(--chat-borde);
+  border-radius: 18px;
+  box-shadow: var(--chat-sombra);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* cabecera chat */
+.chat__topbar{
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(15,23,42,.08);
+  background: linear-gradient(90deg, rgba(108,99,255,.14), rgba(59,130,246,.12));
+}
+
+.chat__topLeft{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat__avatar--top{
+  width: 44px;
+  height: 44px;
+}
+
+.chat__titulo{
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--chat-texto);
+}
+.chat__subtitle{
+  font-size: 12px;
+  color: var(--chat-muted);
+  margin-top: 2px;
+}
+
+/* caja mensajes */
+#cajaMensajes{
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px;
+  background:
+    radial-gradient(850px 380px at 20% 20%, rgba(108,99,255,.14), transparent 60%),
+    radial-gradient(700px 340px at 85% 35%, rgba(59,130,246,.12), transparent 60%),
+    #f8fafc;
+}
+
+/* burbujas */
+.chat__fila{
+  margin: 10px 0;
+  display: flex;
+}
+.chat__fila--mio{ justify-content: flex-end; }
+
+.chat__burbuja{
+  max-width: 74%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15,23,42,.05);
+}
+
+.chat__fila--mio .chat__burbuja{
+  background: rgba(108,99,255,.16);
+  border-color: rgba(108,99,255,.24);
+}
+
+.chat__nombre{
+  font-weight: 800;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.chat__fecha{
+  font-size: 12px;
+  color: var(--chat-muted);
+  margin-top: 6px;
+}
+.chat__estado{
+  font-size: 12px;
+  color: var(--chat-muted);
+  margin-top: 3px;
+  text-align: right;
+}
+
+.chat__vacio{
+  text-align: center;
+  color: var(--chat-muted);
+  margin: 12px 0;
+}
+
+/* input abajo */
+.chat__form{
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid rgba(15,23,42,.08);
+  background: #fff;
+}
+
+.chat__input{
+  flex: 1;
+  padding: 11px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.12);
+  outline: none;
+  background: #fff;
+}
+
+.chat__input:focus{
+  border-color: rgba(108,99,255,.65);
+  box-shadow: 0 0 0 4px rgba(108,99,255,.14);
+}
+
+.chat__btn{
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 0;
+  cursor: pointer;
+  background: var(--chat-azul);
+  color: #fff;
+  font-weight: 900;
+}
+
+.chat__btn:hover{
+  background: var(--chat-azul-oscuro);
+}
+
+/* móvil */
+@media (max-width: 980px){
+  .chat__layout{ flex-direction: column; }
+  .chat__side{ width: auto; flex: 0 0 auto; height: auto; max-height: none; }
+  .chat__main{ height: 72vh; max-height: none; }
+}
+
+<?php
+// php/notificaciones_chat.php
+// Funciones para contar mensajes NO LEÍDOS usando mensaje + estadomensaje
+// (No modifica la BD, solo consulta)
+
+if (!function_exists("contarNoLeidosTotal")) {
+  function contarNoLeidosTotal($conexion, int $yo): int {
+    // Privados no leídos (mensajes para mí y sin registro en estadomensaje)
+    $sql = "
+      SELECT COUNT(*) AS total
+      FROM mensaje m
+      LEFT JOIN estadomensaje e
+        ON e.id_mensaje = m.id_mensaje
+       AND e.id_usuario_receptor = ?
+      WHERE m.id_usuario_receptor = ?
+        AND m.id_grupo IS NULL
+        AND e.id_mensaje IS NULL
+    ";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $yo, $yo);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($res);
+    mysqli_stmt_close($stmt);
+    return (int)($row["total"] ?? 0);
+  }
+}
+
+if (!function_exists("noLeidosPorEmisor")) {
+  function noLeidosPorEmisor($conexion, int $yo): array {
+    // Devuelve array: [id_emisor => cantidad]
+    $sql = "
+      SELECT m.id_usuario_emisor, COUNT(*) AS total
+      FROM mensaje m
+      LEFT JOIN estadomensaje e
+        ON e.id_mensaje = m.id_mensaje
+       AND e.id_usuario_receptor = ?
+      WHERE m.id_usuario_receptor = ?
+        AND m.id_grupo IS NULL
+        AND e.id_mensaje IS NULL
+      GROUP BY m.id_usuario_emisor
+    ";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $yo, $yo);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    $map = [];
+    while ($r = mysqli_fetch_assoc($res)) {
+      $map[(int)$r["id_usuario_emisor"]] = (int)$r["total"];
+    }
+    mysqli_stmt_close($stmt);
+    return $map;
+  }
+}
+
+/* badge notificaciones */
+.chat__badge{
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 

@@ -178,8 +178,10 @@ mysqli_stmt_close($stmtP);
                 <p class="post-meta" style="margin-bottom:10px;">
                   Seguidores: <b><?= $followers ?></b> · Seguidos: <b><?= $following ?></b>
                 </p>
-
+                  
                 <?php if (!$esMiPerfil): ?>
+                  <a href="chat.php?id=<?= (int)$idPerfil ?>" class="btn-chat"> Chat</a>
+
                   <form action="php/seguir_noseguir.php" method="post" style="margin:0;">
                     <input type="hidden" name="id_seguido" value="<?= (int)$idPerfil ?>">
                     <button class="btn-primary" type="submit" style="padding:10px 14px;border-radius:12px;">

@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . "/php/require_login.php";
 include_once __DIR__ . "/php/conexion.php";
+require_once __DIR__ . "/php/notificaciones_chat.php";
 
 $conexion = conexionBD();
 $idYo = (int)$_SESSION['id_usuario'];
+$noLeidosTotal = contarNoLeidosTotal($conexion, $idYo);
 
 /* ===================== PERFIL: cargar foto_perfil ===================== */
 $miFoto = '';
@@ -74,12 +76,15 @@ mysqli_stmt_close($stmt);
 
     <nav id="sidebar-nav">
       <ul class="nav-section">
-        <li class="nav-item active">Home</li>
-        <li class="nav-item">Popular</li>
+        <li class="nav-item active">Home</li> 
         <li class="nav-item">All</li>
         <li class="nav-item">
           <a href="usuarios.php" style="color:inherit;text-decoration:none;">Usuarios</a>
         </li>
+        <li class="nav-item">
+            <a href="chat.php" style="color:inherit;text-deÑcoration:none;">Chat</a>
+        </li>
+
       </ul>
 
       <div class="nav-title">Account</div>
