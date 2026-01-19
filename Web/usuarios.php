@@ -3,47 +3,31 @@ require_once __DIR__ . "/php/require_login.php";
 require_once __DIR__ . "/php/conexion.php";
 
 $conexion = conexionBD();
-
-// Se obtiene el ID del usuario actual desde la sesión
-// Se fuerza a entero por seguridad
 $idYo = (int)$_SESSION['id_usuario'];
 
-/*
-  Consulta para obtener todos los usuarios menos el usuario actual
-  y comprobar si el usuario actual los sigue o no.
-*/
 $sql = "
 SELECT
   u.id_usuario,
   u.nombre_usuario,
   u.foto_perfil,
   u.biografia,
-  CASE WHEN s.id_usuario IS NULL THEN 0 ELSE 1 END AS yo_lo_sigo FROM usuario u
-  LEFT JOIN seguidor s
+  CASE WHEN s.id_usuario IS NULL THEN 0 ELSE 1 END AS yo_lo_sigo
+FROM usuario u
+LEFT JOIN seguidor s
   ON s.id_seguido = u.id_usuario AND s.id_usuario = ?
-  WHERE u.id_usuario <> ?
-  ORDER BY u.nombre_usuario ASC
+WHERE u.id_usuario <> ?
+ORDER BY u.nombre_usuario ASC
 ";
 
-// Se prepara la consulta para evitar inyecciones SQL
 $stmt = mysqli_prepare($conexion, $sql);
-
-// Se sustituyen los parámetros ? por el ID del usuario actual
 mysqli_stmt_bind_param($stmt, "ii", $idYo, $idYo);
-
-// Se ejecuta la consulta
 mysqli_stmt_execute($stmt);
-
-// Se obtienen los resultados
 $res = mysqli_stmt_get_result($stmt);
 
-// Se guardan todos los usuarios en un array
 $usuarios = [];
 while ($row = mysqli_fetch_assoc($res)) {
   $usuarios[] = $row;
 }
-
-// Se cierra el statement
 mysqli_stmt_close($stmt);
 ?>
 
@@ -85,8 +69,8 @@ mysqli_stmt_close($stmt);
     <!-- Barra superior -->
     <header id="topbar">
       <div id="search-container">
-        <!-- Buscador (funcionalidad futura) -->
-        <input id="search-input" type="text" placeholder="Buscar (más adelante)">
+        <!-- BUSCADOR REAL -->
+        <input id="search-input" type="text" placeholder="Buscar usuarios..." autocomplete="off">
       </div>
 
       <div id="topbar-actions">
@@ -104,68 +88,74 @@ mysqli_stmt_close($stmt);
     <div id="content" style="grid-template-columns: 1fr;">
       <main id="feed">
 
-        <h2 style="margin-bottom:18px;">Descubrir personas</h2>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; gap:12px;">
+          <h2 style="margin:0;">Descubrir personas</h2>
+          <div class="text-muted" id="contador-usuarios"></div>
+        </div>
 
-        <!-- Se recorre la lista de usuarios obtenidos de la base de datos -->
-        <?php foreach ($usuarios as $u): ?>
+        <!-- Mensaje cuando no hay resultados -->
+        <p class="text-muted" id="sin-resultados" style="display:none; margin: 10px 0 20px;">
+          No se han encontrado usuarios con ese nombre.
+        </p>
 
-          <article class="post" style="align-items:center;">
-            <div class="post-body">
+        <!-- LISTA DE USUARIOS -->
+        <div id="lista-usuarios">
+          <?php foreach ($usuarios as $u): ?>
+            <?php
+              $foto = $u['foto_perfil'] ?? '';
+              $src = ($foto !== '')
+                ? "uploads/perfiles/" . htmlspecialchars($foto)
+                : "";
 
-              <div style="display:flex; align-items:center; gap:14px;">
+              $nombre = $u['nombre_usuario'] ?? '';
+              $nombreLower = mb_strtolower($nombre, 'UTF-8');
+            ?>
 
-                <?php
-                  // Se comprueba si el usuario tiene foto de perfil
-                  $foto = $u['foto_perfil'] ?? '';
-                  $src = ($foto !== '') 
-                    ? "uploads/perfiles/" . htmlspecialchars($foto) 
-                    : "";
-                ?>
+            <article
+              class="post usuario-card"
+              data-name="<?= htmlspecialchars($nombreLower) ?>"
+              style="align-items:center;"
+            >
+              <div class="post-body">
+                <div style="display:flex; align-items:center; gap:14px;">
 
-                <!-- Contenedor de la imagen de perfil -->
-                <div style="width:54px;height:54px;border-radius:50%;background:#ddd;overflow:hidden;flex:0 0 54px;">
-                  <?php if ($src !== ''): ?>
-                    <img src="<?= $src ?>" alt="perfil" style="width:100%;height:100%;object-fit:cover;">
-                  <?php endif; ?>
-                </div>
-
-                <!-- Información del usuario -->
-                <div style="flex:1;">
-                  <div style="font-weight:700;">
-                    <!-- Enlace al perfil del usuario -->
-                    <a href="perfil.php?id=<?= (int)$u['id_usuario'] ?>" style="color:inherit;text-decoration:none;">
-                      <?= htmlspecialchars($u['nombre_usuario']) ?>
-                    </a>
+                  <!-- Foto perfil -->
+                  <div style="width:54px;height:54px;border-radius:50%;background:#ddd;overflow:hidden;flex:0 0 54px;">
+                    <?php if ($src !== ''): ?>
+                      <img src="<?= $src ?>" alt="perfil" style="width:100%;height:100%;object-fit:cover;">
+                    <?php endif; ?>
                   </div>
 
-                  <!-- Biografía recortada para no romper el diseño -->
-                  <div class="post-meta" style="margin:6px 0 0;">
-                    <?= htmlspecialchars(mb_strimwidth($u['biografia'] ?? '', 0, 90, '...')) ?>
+                  <!-- Info -->
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-weight:700;">
+                      <a href="perfil.php?id=<?= (int)$u['id_usuario'] ?>" style="color:inherit;text-decoration:none;">
+                        <?= htmlspecialchars($nombre) ?>
+                      </a>
+                    </div>
+
+                    <div class="post-meta" style="margin:6px 0 0;">
+                      <?= htmlspecialchars(mb_strimwidth($u['biografia'] ?? '', 0, 90, '...')) ?>
+                    </div>
                   </div>
+
+                  <!-- Chat -->
+                  <a href="chat.php?id=<?= (int)$u['id_usuario'] ?>" class="btn-chat">Chat</a>
+
+                  <!-- Seguir -->
+                  <form action="php/seguir_noseguir.php" method="post" style="margin:0;">
+                    <input type="hidden" name="id_seguido" value="<?= (int)$u['id_usuario'] ?>">
+                    <button class="btn-primary" type="submit" style="padding:10px 14px;border-radius:12px;">
+                      <?= ((int)$u['yo_lo_sigo'] === 1) ? "Dejar de seguir" : "Seguir" ?>
+                    </button>
+                  </form>
+
                 </div>
-
-                <!-- Botón para iniciar un chat -->
-                <a href="chat.php?id=<?= (int)$u['id_usuario'] ?>" class="btn-chat">
-                  Chat
-                </a>
-
-                <!-- Formulario para seguir o dejar de seguir -->
-                <form action="php/seguir_noseguir.php" method="post" style="margin:0;">
-                  <!-- ID del usuario al que se sigue o deja de seguir -->
-                  <input type="hidden" name="id_seguido" value="<?= (int)$u['id_usuario'] ?>">
-
-                  <!-- Texto del botón según si ya se sigue o no -->
-                  <button class="btn-primary" type="submit" style="padding:10px 14px;border-radius:12px;">
-                    <?= ((int)$u['yo_lo_sigo'] === 1) ? "Dejar de seguir" : "Seguir" ?>
-                  </button>
-                </form>
-
               </div>
+            </article>
 
-            </div>
-          </article>
-
-        <?php endforeach; ?>
+          <?php endforeach; ?>
+        </div>
 
       </main>
     </div>
@@ -173,5 +163,7 @@ mysqli_stmt_close($stmt);
 
 </div>
 
+<!-- JS externo -->
+<script src="js/usuarios.js"></script>
 </body>
 </html>

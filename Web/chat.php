@@ -83,7 +83,7 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="estilos/estilos.css">
-  <title><?= h($titulo) ?></title>
+  <title>Chat privado: <?= h($titulo) ?></title>
 </head>
 <body>
   <div class="chat">
