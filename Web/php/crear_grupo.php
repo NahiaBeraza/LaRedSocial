@@ -18,11 +18,13 @@ if ($nombre === "") {
   exit();
 }
 
-// crear grupo
 $fecha = date("Y-m-d H:i:s");
-$sql = "INSERT INTO grupo (nombre_grupo, fecha_creacion, tamano_maximo) VALUES (?, ?, 15)";
+
+// crear grupo (con creador)
+$sql = "INSERT INTO grupo (nombre_grupo, fecha_creacion, tamano_maximo, id_creador)
+        VALUES (?, ?, 15, ?)";
 $stmt = mysqli_prepare($conexion, $sql);
-mysqli_stmt_bind_param($stmt, "ss", $nombre, $fecha);
+mysqli_stmt_bind_param($stmt, "ssi", $nombre, $fecha, $yo);
 mysqli_stmt_execute($stmt);
 $idGrupo = mysqli_insert_id($conexion);
 mysqli_stmt_close($stmt);

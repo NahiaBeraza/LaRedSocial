@@ -11,7 +11,26 @@ $idGrupo = isset($_GET["grupo"]) ? (int)$_GET["grupo"] : 0;
 
 $modoInbox = ($idOtro <= 0 && $idGrupo <= 0);
 
+$modal = $_GET["modal"] ?? "";
+if (!in_array($modal, ["miembros"], true)) $modal = "";
+
 function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); }
+
+/**
+ * Normaliza la ruta de foto_perfil venga como:
+ * - "foto.jpg"
+ * - "perfiles/foto.jpg"
+ * - "uploads/perfiles/foto.jpg"
+ */
+function fotoPerfilUrl(?string $foto): string {
+  $foto = trim((string)$foto);
+  if ($foto === "") return "";
+
+  if (strpos($foto, "uploads/") === 0) return $foto;
+  if (strpos($foto, "perfiles/") === 0) return "uploads/" . $foto;
+
+  return "uploads/perfiles/" . $foto;
+}
 
 // Datos cabecera chat
 $otro = null;
@@ -19,6 +38,11 @@ $grupo = null;
 
 $titulo = "Chat";
 $subtitulo = $modoInbox ? "Selecciona un usuario o grupo" : "";
+
+$esMiembroGrupo = false;
+$soyCreadorGrupo = false;
+$miembrosGrupo = [];
+$usuariosNoEnGrupo = [];
 
 if ($idOtro > 0) {
   $sql = "SELECT id_usuario, nombre_usuario, foto_perfil FROM usuario WHERE id_usuario = ? LIMIT 1";
@@ -36,7 +60,7 @@ if ($idOtro > 0) {
 }
 
 if ($idGrupo > 0) {
-  $sql = "SELECT id_grupo, nombre_grupo FROM grupo WHERE id_grupo = ? LIMIT 1";
+  $sql = "SELECT id_grupo, nombre_grupo, id_creador FROM grupo WHERE id_grupo = ? LIMIT 1";
   $stmt = mysqli_prepare($conexion, $sql);
   mysqli_stmt_bind_param($stmt, "i", $idGrupo);
   mysqli_stmt_execute($stmt);
@@ -47,6 +71,49 @@ if ($idGrupo > 0) {
   if ($grupo) {
     $titulo = $grupo["nombre_grupo"];
     $subtitulo = "Chat de grupo";
+  }
+
+  // verificar miembro
+  $stmtM = mysqli_prepare($conexion, "SELECT 1 FROM miembro WHERE id_grupo = ? AND id_usuario = ? LIMIT 1");
+  mysqli_stmt_bind_param($stmtM, "ii", $idGrupo, $yo);
+  mysqli_stmt_execute($stmtM);
+  mysqli_stmt_store_result($stmtM);
+  $esMiembroGrupo = (mysqli_stmt_num_rows($stmtM) === 1);
+  mysqli_stmt_close($stmtM);
+
+  $soyCreadorGrupo = ($grupo && (int)$grupo["id_creador"] === $yo);
+
+  // modal miembros
+  if ($grupo && $esMiembroGrupo && $modal === "miembros") {
+    $sqlMem = "
+      SELECT u.id_usuario, u.nombre_usuario, u.foto_perfil
+      FROM miembro m
+      JOIN usuario u ON u.id_usuario = m.id_usuario
+      WHERE m.id_grupo = ?
+      ORDER BY u.nombre_usuario ASC
+    ";
+    $stmt = mysqli_prepare($conexion, $sqlMem);
+    mysqli_stmt_bind_param($stmt, "i", $idGrupo);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_assoc($res)) $miembrosGrupo[] = $row;
+    mysqli_stmt_close($stmt);
+
+    if ($soyCreadorGrupo) {
+      $sqlNo = "
+        SELECT u.id_usuario, u.nombre_usuario, u.foto_perfil
+        FROM usuario u
+        WHERE u.id_usuario <> ?
+          AND u.id_usuario NOT IN (SELECT id_usuario FROM miembro WHERE id_grupo = ?)
+        ORDER BY u.nombre_usuario ASC
+      ";
+      $stmt = mysqli_prepare($conexion, $sqlNo);
+      mysqli_stmt_bind_param($stmt, "ii", $yo, $idGrupo);
+      mysqli_stmt_execute($stmt);
+      $res = mysqli_stmt_get_result($stmt);
+      while ($row = mysqli_fetch_assoc($res)) $usuariosNoEnGrupo[] = $row;
+      mysqli_stmt_close($stmt);
+    }
   }
 }
 
@@ -70,12 +137,12 @@ while ($row = mysqli_fetch_assoc($resGr)) $grupos[] = $row;
 mysqli_stmt_close($stmtG);
 
 // NOTIFICACIONES
-$noLeidosEmisor = noLeidosPorEmisor($conexion, $yo);  // [id_usuario => total]
-$noLeidosGrupo  = noLeidosPorGrupo($conexion, $yo);   // [id_grupo => total]
+$noLeidosEmisor = noLeidosPorEmisor($conexion, $yo);
+$noLeidosGrupo  = noLeidosPorGrupo($conexion, $yo);
 
-// Foto cabecera
+// Foto cabecera privado
 $fotoCabecera = "";
-if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["foto_perfil"];
+if ($otro) $fotoCabecera = fotoPerfilUrl($otro["foto_perfil"] ?? "");
 ?>
 <!doctype html>
 <html lang="es">
@@ -83,7 +150,7 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="estilos/estilos.css">
-  <title>Chat privado: <?= h($titulo) ?></title>
+  <title>Chat: <?= h($titulo) ?></title>
 </head>
 <body>
   <div class="chat">
@@ -105,8 +172,8 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
               $activo = ($idOtro > 0 && $uid === $idOtro);
               $clase = "chat__item" . ($activo ? " chat__item--activo" : "");
 
-              $foto = "";
-              if (!empty($u["foto_perfil"])) $foto = "uploads/" . $u["foto_perfil"];
+              // ✅ FOTO PERFIL ARREGLADA
+              $foto = fotoPerfilUrl($u["foto_perfil"] ?? "");
 
               $cant = $noLeidosEmisor[$uid] ?? 0;
             ?>
@@ -171,7 +238,6 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
               <?php endif; ?>
 
               <div>
-                <!-- Click al perfil -->
                 <a class="chat__tituloLink" href="perfil.php?id=<?= (int)$otro["id_usuario"] ?>">
                   <div class="chat__titulo"><?= h($titulo) ?></div>
                 </a>
@@ -181,7 +247,9 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
             <?php elseif ($grupo): ?>
               <div class="chat__avatar chat__avatar--top"></div>
               <div>
-                <div class="chat__titulo"><?= h("Grupo: " . $titulo) ?></div>
+                <a class="chat__tituloLink" href="chat.php?grupo=<?= (int)$idGrupo ?>&modal=miembros">
+                  <div class="chat__titulo"><?= h("Grupo: " . $titulo) ?></div>
+                </a>
                 <div class="chat__subtitle"><?= h($subtitulo) ?></div>
               </div>
 
@@ -204,7 +272,7 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
         </div>
 
         <?php if (!$modoInbox): ?>
-          <form class="chat__form" method="POST" action="php/enviar_chat.php">
+          <form class="chat__form" method="POST" action="php/enviar_chat.php" enctype="multipart/form-data">
             <?php if ($idOtro > 0): ?>
               <input type="hidden" name="id" value="<?= (int)$idOtro ?>">
             <?php endif; ?>
@@ -212,8 +280,14 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
               <input type="hidden" name="grupo" value="<?= (int)$idGrupo ?>">
             <?php endif; ?>
 
+            <label class="chat__clip" title="Enviar foto o vídeo">
+              📎
+              <input type="file" name="archivo" accept="image/*,video/mp4,video/webm,video/ogg" style="display:none;">
+            </label>
+
             <input class="chat__input" type="text" name="texto" id="texto" autocomplete="off"
-                   placeholder="Escribe un mensaje..." required>
+                   placeholder="Escribe un mensaje...">
+
             <button class="chat__btn" type="submit">Enviar</button>
           </form>
         <?php endif; ?>
@@ -222,6 +296,97 @@ if ($otro && !empty($otro["foto_perfil"])) $fotoCabecera = "uploads/" . $otro["f
 
     </div>
   </div>
+
+  <!-- MODAL miembros grupo -->
+  <?php if ($grupo && $esMiembroGrupo && $modal === "miembros"): ?>
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <div class="modal-head">
+          <div class="modal-title">Miembros · <?= h($grupo["nombre_grupo"]) ?></div>
+          <a class="modal-close" href="chat.php?grupo=<?= (int)$idGrupo ?>">✕</a>
+        </div>
+
+        <div class="modal-body">
+          <?php if (empty($miembrosGrupo)): ?>
+            <div class="modal-empty">No hay miembros.</div>
+          <?php else: ?>
+            <?php foreach ($miembrosGrupo as $m): ?>
+              <?php
+                $uid = (int)$m["id_usuario"];
+                $nombre = $m["nombre_usuario"] ?? "";
+                $foto = fotoPerfilUrl($m["foto_perfil"] ?? "");
+                $esYo = ($uid === $yo);
+                $esCreador = ($grupo && (int)$grupo["id_creador"] === $uid);
+              ?>
+              <div class="modal-row">
+                <a class="modal-user" href="perfil.php?id=<?= $uid ?>">
+                  <div class="modal-avatar" style="<?= $foto ? "background-image:url('".h($foto)."')" : "" ?>"></div>
+                  <div class="modal-name">
+                    <?= h($nombre) ?>
+                    <?php if ($esCreador): ?>
+                      <span style="font-weight:800; opacity:.7;">(creador)</span>
+                    <?php endif; ?>
+                    <?php if ($esYo): ?>
+                      <span style="font-weight:800; opacity:.7;">(tú)</span>
+                    <?php endif; ?>
+                  </div>
+                </a>
+
+                <div class="modal-actions">
+                  <?php if ($soyCreadorGrupo && !$esYo): ?>
+                    <form action="php/grupo_expulsar.php" method="post" style="margin:0;">
+                      <input type="hidden" name="grupo" value="<?= (int)$idGrupo ?>">
+                      <input type="hidden" name="id_usuario" value="<?= $uid ?>">
+                      <button class="modal-btn modal-btn-danger" type="submit">Suprimir</button>
+                    </form>
+                  <?php endif; ?>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+
+          <div style="margin-top:14px; border-top:1px solid rgba(15,23,42,.10); padding-top:12px;">
+            <?php if ($soyCreadorGrupo): ?>
+              <div style="font-weight:900; margin-bottom:8px;">Añadir usuario</div>
+
+              <form action="php/grupo_anadir.php" method="post" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <input type="hidden" name="grupo" value="<?= (int)$idGrupo ?>">
+                <select class="input" name="id_usuario" required style="min-width:240px;">
+                  <option value="">Selecciona usuario...</option>
+                  <?php foreach ($usuariosNoEnGrupo as $u): ?>
+                    <option value="<?= (int)$u["id_usuario"] ?>"><?= h($u["nombre_usuario"]) ?></option>
+                  <?php endforeach; ?>
+                </select>
+                <button class="btn-primary" type="submit" style="padding:10px 14px;border-radius:12px;">Añadir</button>
+              </form>
+            <?php endif; ?>
+
+            <div style="margin-top:14px;">
+              <form action="php/grupo_salir.php" method="post" style="margin:0;">
+                <input type="hidden" name="grupo" value="<?= (int)$idGrupo ?>">
+                <button class="modal-btn modal-btn-danger" type="submit">Salir del grupo</button>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        const bg = document.getElementById("modalBackdrop");
+        if(!bg) return;
+        bg.addEventListener("click", (e) => {
+          if(e.target === bg) window.location.href = "chat.php?grupo=<?= (int)$idGrupo ?>";
+        });
+        document.addEventListener("keydown", (e) => {
+          if(e.key === "Escape") window.location.href = "chat.php?grupo=<?= (int)$idGrupo ?>";
+        });
+      })();
+    </script>
+  <?php endif; ?>
 
 <script>
 const caja = document.getElementById("cajaMensajes");

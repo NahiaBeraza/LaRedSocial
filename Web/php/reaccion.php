@@ -21,8 +21,11 @@ if ($idPublicacion <= 0 || !in_array($tipo, $tiposValidos, true)) {
 
 $conexion = conexionBD();
 
-// ¿ya reaccioné en esa publicación?
-$sqlCheck = "SELECT tipo FROM reaccion WHERE id_usuario = ? AND id_publicacion = ? LIMIT 1";
+/* ===== ¿ya reaccioné en esta publicación? ===== */
+$sqlCheck = "SELECT tipo
+             FROM reaccion
+             WHERE id_usuario = ? AND id_publicacion = ?
+             LIMIT 1";
 $stmt = mysqli_prepare($conexion, $sqlCheck);
 mysqli_stmt_bind_param($stmt, "ii", $idUsuario, $idPublicacion);
 mysqli_stmt_execute($stmt);
@@ -33,8 +36,20 @@ mysqli_stmt_close($stmt);
 $fecha = date("Y-m-d H:i:s");
 
 if ($row) {
-  // si es distinta -> update
-  if ($row["tipo"] !== $tipo) {
+
+  /* ===== CASO 1: MISMA reacción → BORRAR ===== */
+  if ($row["tipo"] === $tipo) {
+
+    $sqlDel = "DELETE FROM reaccion
+               WHERE id_usuario = ? AND id_publicacion = ?";
+    $stmtDel = mysqli_prepare($conexion, $sqlDel);
+    mysqli_stmt_bind_param($stmtDel, "ii", $idUsuario, $idPublicacion);
+    mysqli_stmt_execute($stmtDel);
+    mysqli_stmt_close($stmtDel);
+
+  } else {
+
+    /* ===== CASO 2: distinta → UPDATE ===== */
     $sqlUp = "UPDATE reaccion
               SET tipo = ?, fecha_reaccion = ?
               WHERE id_usuario = ? AND id_publicacion = ?";
@@ -43,8 +58,10 @@ if ($row) {
     mysqli_stmt_execute($stmtUp);
     mysqli_stmt_close($stmtUp);
   }
+
 } else {
-  // insert
+
+  /* ===== CASO 3: no existía → INSERT ===== */
   $sqlIns = "INSERT INTO reaccion (id_usuario, id_publicacion, tipo, fecha_reaccion)
              VALUES (?, ?, ?, ?)";
   $stmtIns = mysqli_prepare($conexion, $sqlIns);
@@ -53,6 +70,7 @@ if ($row) {
   mysqli_stmt_close($stmtIns);
 }
 
+/* ===== Volver ===== */
 $back = $_SERVER["HTTP_REFERER"] ?? "../index.php";
 header("Location: " . $back);
 exit();

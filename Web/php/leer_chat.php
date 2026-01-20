@@ -10,26 +10,26 @@ $esDirecto = (basename($_SERVER["SCRIPT_NAME"]) === "leer_chat.php");
 if (!function_exists("terminar")) {
   function terminar($esDirecto) { if ($esDirecto) exit(); }
 }
-
 if (!function_exists("h")) {
   function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); }
+}
+
+function esVideo($ruta){
+  $ruta = strtolower((string)$ruta);
+  return (bool)preg_match('/\.(mp4|webm|ogg)$/', $ruta);
 }
 
 $idOtro  = isset($_GET["id"]) ? (int)$_GET["id"] : 0;
 $idGrupo = isset($_GET["grupo"]) ? (int)$_GET["grupo"] : 0;
 
-/* IMPORTANTE: si no hay chat seleccionado, NO mostramos nada */
-if ($idOtro <= 0 && $idGrupo <= 0) {
-  // vacío a propósito para evitar "chat no válido"
-  terminar($esDirecto);
-}
+if ($idOtro <= 0 && $idGrupo <= 0) terminar($esDirecto);
 
 /* ======================
    CHAT PRIVADO
-   ====================== */
+====================== */
 if ($idOtro > 0) {
 
-  $sql = "SELECT m.id_mensaje, m.id_usuario_emisor, m.id_usuario_receptor, m.texto, m.fecha,
+  $sql = "SELECT m.id_mensaje, m.id_usuario_emisor, m.id_usuario_receptor, m.texto, m.foto, m.fecha,
                  u.nombre_usuario,
                  em.fecha_leido AS fecha_leido_por_otro
           FROM mensaje m
@@ -62,12 +62,28 @@ if ($idOtro > 0) {
       $idsParaLeer[] = (int)$m["id_mensaje"];
     }
 
+    $ruta = $m["foto"] ?? "";
+    $tieneArchivo = !empty($ruta);
+    $src = $tieneArchivo ? ("uploads/" . h($ruta)) : "";
+
     echo '<div class="chat__fila ' . ($esMio ? 'chat__fila--mio' : '') . '">';
     echo '  <div class="chat__burbuja">';
-
     if (!$esMio) echo '    <div class="chat__nombre">' . h($m["nombre_usuario"]) . '</div>';
 
-    echo '    <div>' . nl2br(h($m["texto"])) . '</div>';
+    if ($tieneArchivo) {
+      if (esVideo($ruta)) {
+        echo '    <video controls style="max-width:320px; border-radius:12px; display:block; margin-bottom:8px;">';
+        echo '      <source src="' . $src . '">';
+        echo '    </video>';
+      } else {
+        echo '    <img src="' . $src . '" alt="" style="max-width:320px;border-radius:12px;display:block;margin-bottom:8px;">';
+      }
+    }
+
+    if (!empty($m["texto"])) {
+      echo '    <div>' . nl2br(h($m["texto"])) . '</div>';
+    }
+
     echo '    <div class="chat__fecha">' . h($m["fecha"]) . '</div>';
 
     if ($esMio) {
@@ -80,9 +96,7 @@ if ($idOtro > 0) {
   }
   mysqli_stmt_close($stmt);
 
-  if (!$hayMensajes) {
-    echo '<p class="chat__vacio">No hay mensajes todavía. Escribe el primero 😊</p>';
-  }
+  if (!$hayMensajes) echo '<p class="chat__vacio">No hay mensajes todavía. Escribe el primero 😊</p>';
 
   if (!empty($idsParaLeer)) {
     $now = date("Y-m-d H:i:s");
@@ -102,7 +116,7 @@ if ($idOtro > 0) {
 
 /* ======================
    CHAT GRUPO
-   ====================== */
+====================== */
 if ($idGrupo > 0) {
 
   $stmtM = mysqli_prepare($conexion, "SELECT 1 FROM miembro WHERE id_grupo = ? AND id_usuario = ? LIMIT 1");
@@ -117,7 +131,7 @@ if ($idGrupo > 0) {
     terminar($esDirecto);
   }
 
-  $sql = "SELECT m.id_mensaje, m.id_usuario_emisor, m.texto, m.fecha,
+  $sql = "SELECT m.id_mensaje, m.id_usuario_emisor, m.texto, m.foto, m.fecha,
                  u.nombre_usuario
           FROM mensaje m
           JOIN usuario u ON u.id_usuario = m.id_usuario_emisor
@@ -130,41 +144,41 @@ if ($idGrupo > 0) {
   mysqli_stmt_execute($stmt);
   $res = mysqli_stmt_get_result($stmt);
 
-  $idsParaLeer = [];
   $hayMensajes = false;
 
   while ($m = mysqli_fetch_assoc($res)) {
     $hayMensajes = true;
     $esMio = ((int)$m["id_usuario_emisor"] === $yo);
 
-    if (!$esMio) $idsParaLeer[] = (int)$m["id_mensaje"];
+    $ruta = $m["foto"] ?? "";
+    $tieneArchivo = !empty($ruta);
+    $src = $tieneArchivo ? ("uploads/" . h($ruta)) : "";
 
     echo '<div class="chat__fila ' . ($esMio ? 'chat__fila--mio' : '') . '">';
     echo '  <div class="chat__burbuja">';
     if (!$esMio) echo '    <div class="chat__nombre">' . h($m["nombre_usuario"]) . '</div>';
-    echo '    <div>' . nl2br(h($m["texto"])) . '</div>';
+
+    if ($tieneArchivo) {
+      if (esVideo($ruta)) {
+        echo '    <video controls style="max-width:320px; border-radius:12px; display:block; margin-bottom:8px;">';
+        echo '      <source src="' . $src . '">';
+        echo '    </video>';
+      } else {
+        echo '    <img src="' . $src . '" alt="" style="max-width:320px;border-radius:12px;display:block;margin-bottom:8px;">';
+      }
+    }
+
+    if (!empty($m["texto"])) {
+      echo '    <div>' . nl2br(h($m["texto"])) . '</div>';
+    }
+
     echo '    <div class="chat__fecha">' . h($m["fecha"]) . '</div>';
     echo '  </div>';
     echo '</div>';
   }
   mysqli_stmt_close($stmt);
 
-  if (!$hayMensajes) {
-    echo '<p class="chat__vacio">No hay mensajes todavía en este grupo 😊</p>';
-  }
-
-  if (!empty($idsParaLeer)) {
-    $now = date("Y-m-d H:i:s");
-    $stmtRead = mysqli_prepare(
-      $conexion,
-      "INSERT IGNORE INTO estadomensaje (id_mensaje, id_usuario_receptor, fecha_leido) VALUES (?, ?, ?)"
-    );
-    foreach ($idsParaLeer as $idMsg) {
-      mysqli_stmt_bind_param($stmtRead, "iis", $idMsg, $yo, $now);
-      mysqli_stmt_execute($stmtRead);
-    }
-    mysqli_stmt_close($stmtRead);
-  }
+  if (!$hayMensajes) echo '<p class="chat__vacio">No hay mensajes todavía en este grupo 😊</p>';
 
   terminar($esDirecto);
 }
