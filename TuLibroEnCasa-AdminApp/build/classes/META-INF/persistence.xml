@@ -1,0 +1,40 @@
+<persistence version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence 
+http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/persistence/persistence_2_1.xsd">
+
+	<persistence-unit name="somorrostro_pu">
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		
+		<class>model.Autor</class>
+		<class>model.Categoria</class>
+		<class>model.Editorial</class>
+		<class>model.Libro</class>
+		
+		<properties>
+			<property name="hibernate.archive.autodetection" value="class, hbm" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="use_sql_comments" value="true" />
+			<!-- -->
+			<property name="hibernate.query.factory_class"
+				value="org.hibernate.hql.internal.classic.ClassicQueryTranslatorFactory" />
+			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:mysql://localhost/libreria_virtual?useSSL=false" />
+			<property name="hibernate.connection.username" value="root" />
+			<property name="hibernate.connection.password" value="admin" />
+			<!-- -->
+			<property name="hibernate.c3p0.min_size" value="5" />
+			<property name="hibernate.c3p0.max_size" value="20" />
+			<property name="hibernate.c3p0.timeout" value="300" />
+			<property name="hibernate.c3p0.max_statements" value="50" />
+			<property name="hibernate.c3p0.idle_test_period" value="3000" />
+			<!-- -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			
+ 			<property name="hibernate.hbm2ddl.auto" value="update"/>
+		</properties>
+		
+	</persistence-unit>
+
+</persistence>

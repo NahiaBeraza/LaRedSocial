@@ -3,11 +3,11 @@
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-        $usuario = trim($_POST['usuario']);
-        $correo = trim($_POST['correo']);
-        $contrasena = trim($_POST['contrasena']);
+        $usuario = trim($_POST['usuario'] ?? '');
+        $correo = trim($_POST['correo'] ?? '');
+        $contrasena = trim($_POST['contrasena'] ?? '');
 
-        if (empty($usuario) || empty($correo) || empty($contrasena)) {
+        if ($usuario === '' || $correo === '' || $contrasena === '') {
             header("Location: ../registro.php?error=campos");
             exit();
         }
@@ -22,41 +22,30 @@
         mysqli_stmt_store_result($stmtCheck);
 
         if (mysqli_stmt_num_rows($stmtCheck) > 0) {
-            // Usuario existente
             header("Location: ../registro.php?error=usuario");
             exit();
         }
         mysqli_stmt_close($stmtCheck);
 
-        // Datos extra
         $hash = password_hash($contrasena, PASSWORD_DEFAULT);
+
+        // Si en tu tabla NO existen rol y fecha_registro, elimina esas columnas de aquí:
         $rol = "user";
         $fechaRegistro = date("Y-m-d H:i:s");
 
-        // Insertar
-        $sqlInsert = "INSERT INTO usuario 
-            (nombre_usuario, correo, contrasena, rol, fecha_registro)
-            VALUES (?, ?, ?, ?, ?)";
+        $sqlInsert = "INSERT INTO usuario (nombre_usuario, correo, contrasena, rol, fecha_registro)
+                    VALUES (?, ?, ?, ?, ?)";
 
         $stmtInsert = mysqli_prepare($conexion, $sqlInsert);
-        mysqli_stmt_bind_param(
-            $stmtInsert,
-            "sssss",
-            $usuario,
-            $correo,
-            $hash,
-            $rol,
-            $fechaRegistro
-        );
+        mysqli_stmt_bind_param($stmtInsert, "sssss", $usuario, $correo, $hash, $rol, $fechaRegistro);
 
         if (mysqli_stmt_execute($stmtInsert)) {
-            
             header("Location: ../login.php?registro=ok");
             exit();
-        } else {
-            header("Location: ../registro.php?error=general");
-            exit();
         }
+
+        header("Location: ../registro.php?error=general");
+        exit();
 
     } else {
         echo "Acceso no permitido";
