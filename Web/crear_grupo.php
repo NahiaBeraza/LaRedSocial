@@ -1,15 +1,16 @@
 <?php
-require_once __DIR__ . "/php/require_login.php";
-require_once __DIR__ . "/php/conexion.php";
+require_once __DIR__ . "/php/require_login.php"; // Asegura que el usuario esté logueado antes de dejarle crear un grupo
+require_once __DIR__ . "/php/conexion.php";      // Cargo la función para conectarme a la base de datos
 
-$conexion = conexionBD();
-$yo = (int)$_SESSION["id_usuario"];
+$conexion = conexionBD();              // Abro conexión con la base de datos
+$yo = (int)$_SESSION["id_usuario"];    // Guardo mi id de usuario desde la sesión (a int por seguridad)
 
-$usuarios = [];
-$resU = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario FROM usuario WHERE id_usuario <> $yo ORDER BY nombre_usuario ASC");
-while ($row = mysqli_fetch_assoc($resU)) $usuarios[] = $row;
+$usuarios = []; // Aquí voy a guardar los usuarios que puedo seleccionar para meterlos en el grupo
 
-function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); }
+$resU = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario FROM usuario WHERE id_usuario <> $yo ORDER BY nombre_usuario ASC"); // Saco todos los usuarios menos yo, ordenados por nombre
+while ($row = mysqli_fetch_assoc($resU)) $usuarios[] = $row; // Recorro el resultado y lo meto dentro del array $usuarios
+
+function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); } // Escapo texto antes de imprimirlo en HTML para evitar cosas raras (xss)
 ?>
 <!doctype html>
 <html lang="es">
@@ -32,10 +33,10 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); }
 
         <div style="padding:12px;">
           <p style="margin:0 0 10px 0; opacity:.8;">Selecciona usuarios:</p>
-          <?php foreach ($usuarios as $u): ?>
+          <?php foreach ($usuarios as $u): ?> <!-- Recorro los usuarios para pintar un checkbox por cada uno -->
             <label style="display:block; padding:8px 0;">
-              <input type="checkbox" name="usuarios[]" value="<?= (int)$u["id_usuario"] ?>">
-              <?= h($u["nombre_usuario"]) ?>
+              <input type="checkbox" name="usuarios[]" value="<?= (int)$u["id_usuario"] ?>"> <!-- name usuarios[] para que en POST llegue como array -->
+              <?= h($u["nombre_usuario"]) ?> <!-- Imprimo el nombre escapado -->
             </label>
           <?php endforeach; ?>
         </div>
