@@ -45,7 +45,7 @@ mysqli_stmt_close($stmt);
   <!-- Barra lateral de navegación -->
   <aside id="sidebar">
     <div id="sidebar-logo">
-      <span class="logo-text">slothit</span>
+      <span class="logo-text">AÑA</span>
     </div>
 
     <nav id="sidebar-nav">

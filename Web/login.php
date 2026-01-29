@@ -26,8 +26,6 @@ $registroOk = (isset($_GET['registro']) && $_GET['registro'] === 'ok');
 //se crean variables para mostrar mensajes según parámetros recibidos por la URL
 ?>
 
-
-
 <!--==========================================================-->
 
 

@@ -229,7 +229,7 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
 <div id="app">
 
   <aside id="sidebar">
-    <div id="sidebar-logo"><span class="logo-text">NOMBRE DE LA PÁGINA</span></div>
+    <div id="sidebar-logo"><span class="logo-text">añap</span></div>
 
     <nav id="sidebar-nav">
       <ul class="nav-section">

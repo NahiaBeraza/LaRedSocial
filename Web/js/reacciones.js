@@ -1,27 +1,23 @@
-// js/reacciones.js
-document.addEventListener("DOMContentLoaded", () => {
-  function cerrarTodo() {
-    document.querySelectorAll(".reac-menu").forEach((m) => m.classList.remove("open"));
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".reac-btn");
+  const anyMenu = e.target.closest(".reac-menu");
+
+  // click fuera => cerrar todo
+  if (!btn && !anyMenu) {
+    document.querySelectorAll(".reac-menu.open").forEach(m => m.classList.remove("open"));
+    return;
   }
 
-  document.addEventListener("click", () => cerrarTodo());
+  if (!btn) return;
 
-  document.querySelectorAll(".reac-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+  const postId = btn.dataset.post;
+  const menu = document.getElementById(`reac-menu-${postId}`);
+  if (!menu) return;
 
-      const postId = btn.getAttribute("data-post");
-      const menu = document.getElementById("reac-menu-" + postId);
-      if (!menu) return;
-
-      const estaba = menu.classList.contains("open");
-      cerrarTodo();
-      if (!estaba) menu.classList.add("open");
-    });
+  // cerrar otros
+  document.querySelectorAll(".reac-menu.open").forEach(m => {
+    if (m !== menu) m.classList.remove("open");
   });
 
-  document.querySelectorAll(".reac-menu").forEach((menu) => {
-    menu.addEventListener("click", (e) => e.stopPropagation());
-  });
+  menu.classList.toggle("open");
 });

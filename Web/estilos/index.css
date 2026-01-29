@@ -1,0 +1,393 @@
+/* =========================
+   INDEX OVERRIDES (IG STYLE)
+   ========================= */
+
+/* Evita que estilos globales del .post “rompan” el layout del index */
+#feed .post{
+  display:block !important;
+  gap:0 !important;
+  padding:0 !important;
+  background:#fff !important;
+  border-radius:18px !important;
+  border:1px solid rgba(15,23,42,.08) !important;
+  overflow:hidden !important;
+  margin-bottom:18px !important;
+}
+
+/* Ajuste general del feed */
+#feed{
+  padding:22px !important;
+}
+
+/* Contenedor central + panel derecho */
+#content{
+  display:grid !important;
+  grid-template-columns: minmax(0, 1fr) 320px !important;
+  gap:18px !important;
+  overflow:hidden !important;
+}
+
+/* Feed scroll sin cortar cards */
+#feed{
+  overflow-y:auto !important;
+  min-width:0 !important;
+}
+
+/* Panel derecho */
+#right-panel{
+  overflow-y:auto !important;
+  min-width:0 !important;
+}
+
+/* ================= POST HEADER ================= */
+.post-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 14px 10px 14px;
+  border-bottom:1px solid rgba(15,23,42,.06);
+}
+
+.post-avatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  overflow:hidden;
+  flex:0 0 auto;
+  display:block;
+  border:1px solid rgba(15,23,42,.10);
+  background:#eee;
+}
+
+.post-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* placeholder si no hay imagen */
+.post-avatar span{
+  display:block;
+  width:100%;
+  height:100%;
+  background:linear-gradient(135deg, rgba(108,99,255,.22), rgba(88,79,245,.16));
+}
+
+.post-headInfo{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.post-user{
+  font-weight:900;
+  color:#111827;
+  text-decoration:none;
+  font-size:14px;
+  line-height:1.1;
+}
+
+.post-user:hover{
+  text-decoration:underline;
+  text-decoration-color: rgba(108,99,255,.9);
+}
+
+.post-loc{
+  font-size:12px;
+  color:rgba(17,24,39,.60);
+  line-height:1.1;
+}
+
+/* ================= POST MEDIA ================= */
+.post-media{
+  width:100%;
+  background:#f7f7fb;
+}
+
+/* Evita fotos gigantes/aplastadas */
+.post-media img{
+  width:100%;
+  height:auto;
+  display:block;
+  max-height:70vh;
+  object-fit:contain;
+  background:#fff;
+}
+
+/* ================= ACTIONS ROW ================= */
+.post-actionsRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  gap:12px;
+}
+
+.post-actionsRow .reac{
+  display:flex;
+  align-items:center;
+}
+
+.vote.up.reac-btn{
+  width:40px;
+  height:36px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.10);
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+
+.vote.up.reac-btn:hover{
+  background:rgba(108,99,255,.08);
+  border-color:rgba(108,99,255,.25);
+}
+
+.post-commentBtn{
+  border:1px solid rgba(15,23,42,.10);
+  background:#fff;
+  padding:8px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:800;
+  font-size:13px;
+}
+
+.post-commentBtn:hover{
+  background:rgba(108,99,255,.08);
+  border-color:rgba(108,99,255,.25);
+}
+
+/* resumen reacciones */
+#feed .post-meta{
+  padding:0 14px 10px 14px;
+  margin:0 !important;
+  font-size:12px;
+  color:rgba(17,24,39,.70);
+}
+
+/* texto */
+.post-textWrap{
+  padding:0 14px 12px 14px;
+  font-size:14px;
+  color:#111827;
+  line-height:1.35;
+}
+
+.post-userInline{
+  font-weight:900;
+  margin-right:6px;
+}
+
+.post-tags{
+  padding:0 14px 14px 14px;
+  font-size:12px;
+  color:rgba(108,99,255,.95);
+}
+
+/* ================= RIGHT PANEL FIX ================= */
+.panel-item{
+  display:block;
+  text-decoration:none;
+  color:inherit;
+}
+
+.panel-item-title{
+  font-weight:900;
+}
+
+.panel-item-meta{
+  display:block;
+  margin-top:4px;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* =========================================================
+   MODAL DE COMENTARIOS – LIMPIO, FIJO Y SIN CRECER
+   ========================================================= */
+
+body.modal-open{
+  overflow:hidden;
+}
+
+/* Fondo oscuro */
+#commentsModal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:9999;
+}
+
+#commentsModal.open{
+  display:flex;
+}
+
+/* CAJA BLANCA GRANDE */
+#commentsModal .modal{
+  width:900px;
+  max-width:96vw;
+  height:80vh;                 /* altura FIJA */
+  background:#ffffff;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,.12);
+  box-shadow:0 30px 70px rgba(0,0,0,.25);
+  overflow:hidden;
+
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* HEADER */
+#commentsModal .modal-head{
+  flex:0 0 auto;
+  padding:16px 18px;
+  border-bottom:1px solid rgba(15,23,42,.10);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+#commentsModal .modal-title{
+  font-size:16px;
+  font-weight:800;
+  color:#111827;
+  margin:0;
+}
+
+/* BOTÓN CERRAR – CUADRADO */
+#commentsModal .modal-close{
+  width:90px;
+  height:36px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:8px;
+  border:1px solid rgba(15,23,42,.15);
+  background:#ffffff;
+
+  font-size:13px;
+  font-weight:700;
+  color:#111827;
+
+  cursor:pointer;
+}
+
+#commentsModal .modal-close:hover{
+  background:#f3f4f6;
+}
+
+/* BODY – NO SCROLL AQUÍ */
+#commentsModal .modal-body{
+  flex:1 1 auto;
+  min-height:0;               /* 🔑 CLAVE para que NO crezca */
+  padding:16px 18px;
+  overflow:hidden;
+
+  display:flex;
+  flex-direction:column;
+}
+
+/* LISTA – SCROLL REAL AQUÍ */
+#commentsModal .modal-list{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column-reverse;
+  gap:12px;
+  padding-right:6px;
+}
+
+/* COMENTARIO */
+#commentsModal .c-item{
+  background:#ffffff;
+  border:1px solid rgba(15,23,42,.08);
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+/* Cabecera comentario */
+#commentsModal .c-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+#commentsModal .c-name{
+  font-size:14px;
+  font-weight:800;
+  color:#111827;
+  text-decoration:none;
+}
+
+#commentsModal .c-date{
+  font-size:12px;
+  color:rgba(17,24,39,.45);
+}
+
+/* Texto comentario */
+#commentsModal .c-text{
+  margin-top:6px;
+  font-size:14px;
+  line-height:1.45;
+  color:#111827;
+  word-break:break-word;
+}
+
+/* FOOTER FIJO */
+#commentsModal .modal-foot{
+  flex:0 0 auto;
+  border-top:1px solid rgba(15,23,42,.10);
+  padding:12px 14px;
+  background:#ffffff;
+}
+
+/* FORM */
+#commentsModal .modal-form{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+#commentsModal .modal-form .input{
+  flex:1;
+  height:44px;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.12);
+  background:#f6f7fb;
+  font-size:14px;
+}
+
+#commentsModal .modal-form .btn-primary{
+  height:44px;
+  padding:0 18px;
+  border-radius:12px;
+  border:0;
+  background:#6c63ff;
+  color:#ffffff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+/* RESPONSIVE */
+@media (max-width:600px){
+  #commentsModal .modal{
+    height:88vh;
+  }
+}
