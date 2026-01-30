@@ -1,133 +1,114 @@
-#  TuLibroEnCasa-AdminApp
+# **TuLibroEnCasa‑AdminApp**
 
-Aplicación de administración para la gestión interna del sistema **TuLibroEnCasa**.  
-Incluye herramientas para gestionar autores, categorías, editoriales y libros mediante una interfaz gráfica en Java.
+Aplicación de administración interna para la gestión del sistema **TuLibroEnCasa**.  
+Permite mantener actualizada la base de datos mediante herramientas para gestionar **autores, categorías, editoriales y libros**, utilizando diferentes interfaces desarrolladas en Java.
 
-Este proyecto utiliza **Hibernate + JPA** para la capa de persistencia, siguiendo una arquitectura DAO limpia y modular, se ha creado con Eclipse JavaSE.
+El proyecto está construido en **Java SE 8**, empleando **Hibernate + JPA** para la persistencia y una arquitectura **DAO** modular y mantenible.
 
 ---
 
-##  Tecnologías utilizadas
+# **Tecnologías utilizadas**
 
-###  Backend / Persistencia
-- **Java 17+**
+## **Backend / Persistencia**
+- **Java SE 8**
 - **Hibernate ORM**
 - **JPA (Jakarta Persistence API)**
 - **MySQL 8+**
-- **DAO Pattern**
+- **Patrón DAO**
 - **JDBC + Hibernate SessionFactory**
 
-###  Frontends disponibles
-El proyecto incluye **tres formas de visualizar la aplicación**:
+---
+
+# **Frontends disponibles**
+
+El proyecto incluye **tres interfaces de usuario**, todas conectadas a la misma capa DAO:
 
 ---
 
-## 1️⃣ Modo Consola
-Interfaz por terminal, ideal para pruebas rápidas o entornos sin GUI.
+## **1️⃣ Modo Consola**
+Interfaz basada en texto, ideal para pruebas rápidas o entornos sin GUI.  
+Permite navegar mediante menús numéricos.
 
-**Clase principal:**
-frontendConsola.MenuPrincipalConsol
-
-
----
-
-## 2️⃣ Frontend Simple (Swing básico)
-Interfaz gráfica sencilla, sin estilos avanzados.  
-Perfecta para aprendizaje o equipos que prefieren interfaces minimalistas.
-
-**Clase principal:**
-frontendSimple.MenuPrincipalSimple
-
+**Clase principal:**  
+`frontendConsola.MenuPrincipalConsola`
 
 ---
 
-## 3️⃣ Frontend Estilizado (Swing moderno)
-Interfaz gráfica con diseño más profesional:
-- Tarjetas (cards)
-- Botones estilizados
+## **2️⃣ Frontend Simple (Swing básico)**
+Interfaz gráfica minimalista construida con componentes estándar de Swing.  
+Diseño funcional, sin estilos personalizados.
+
+**Clase principal:**  
+`frontendSimple.MenuPrincipalSimple`
+
+---
+
+## **3️⃣ Frontend Estilizado (Swing moderno)**
+Interfaz gráfica avanzada con diseño visual mejorado:
+
+- Tarjeta central (card)
+- Botones estilizados con colores personalizados
+- Efectos hover
 - Fondo a pantalla completa
-- Colores personalizados
+- Tipografías personalizadas
 
-**Clase principal:**
-frontend.MenuPrincipal
-
+**Clase principal:**  
+`frontend.MenuPrincipal`
 
 ---
 
-#  Base de datos
+# **Base de datos**
 
-La aplicación utiliza MySQL.  
-Incluye scripts SQL para:
+La aplicación utiliza MySQL y proporciona scripts SQL para su configuración:
 
-### ✔ Crear la base de datos
+### ✔ Crear la base de datos  
+`crear_bd.sql`
 
-crear_bd.sql
+### ✔ Insertar datos de prueba  
+`reset_datos.sql`
 
-### ✔ Insertar datos de prueba
-reset_datos.sql
+---
 
-▶️ Cómo ejecutar la aplicación
-Importar el proyecto en Eclipse, IntelliJ o VS Code
+# **Cómo ejecutar la aplicación**
 
-Crear la base de datos ejecutando crear_bd.sql
+1. Importar el proyecto en **Eclipse** 
+2. Crear la base de datos ejecutando `crear_bd.sql`.  
+3. (Opcional) Insertar datos de prueba con `reset_datos.sql`.  
+4. Elegir uno de los tres frontends:  
+   - Modo consola  
+   - Frontend simple  
+   - Frontend estilizado  
+5. Ejecutar la **clase principal** correspondiente.
 
-(Opcional) Insertar datos de prueba con reset_datos.sql
+---
 
-Elegir uno de los tres frontends:
-
-Consola
-
-Frontend Simple
-
-Frontend Estilizado
-
-Ejecutar la clase principal correspondiente
-
-📦 Estructura del proyecto
+# **Estructura del proyecto**
 
 TuLibroEnCasa-AdminApp/
 │
-├── config/              # Conexión a BD (Hibernate + JDBC)
-├── dao/                 # Clases DAO
+├── dao/                 # Clases DAO (acceso a datos)
 ├── model/               # Entidades JPA
-├── frontend/            # Interfaz estilizada
-├── frontendSimple/      # Interfaz simple
-├── consola/             # Modo consola
-├── sql/                 # Scripts SQL
-└── README.md            # Este archivo
+├── frontend/            # Interfaz Swing estilizada
+├── frontendSimple/      # Interfaz Swing básica
+├── frontendConsola/     # Modo consola
+├── META-INF/            # persistence.xml
+├── sql/                 # Scripts SQL (crear_bd.sql, reset_datos.sql)
+└── README.md             # Este archivo
 
-
-👨‍💻 RECOMENDACIONES:
-
-#  1) ¿Dónde lo pego?
-
-1. En tu proyecto, crea un archivo llamado **README.md**  
-2. Pégalo **tal cual**  
-3. Guárdalo
-
-Si usas GitHub:
-
-- Haz commit → `git add README.md`
-- `git commit -m "Añadido README profesional"`
-- `git push`
-
-GitHub lo mostrará automáticamente en la página principal del repositorio.
 
 ---
 
-#  2) ¿Qué más puedes preparar?
+# **Recomendaciones**
 
-Si quieres dejarlo **perfecto**, te recomiendo:
-
-### ✔ Crear carpeta `/sql`  
-Meter ahí:
+## ✔ Añadir carpeta `/sql`
+Incluye:
 - `crear_bd.sql`
 - `reset_datos.sql`
 
-### ✔ Crear carpeta `/imagenes`  
+## ✔ Añadir carpeta `/imagenes`  
 Para capturas de pantalla (opcional).
 
-### ✔ Añadir un `.gitignore`  
+## ✔ Añadir `.gitignore`  
 Para ignorar:
 - `/bin`
 - `/target`
