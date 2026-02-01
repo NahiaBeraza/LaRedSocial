@@ -80,8 +80,7 @@ if (!empty($miFoto)) {
                  . "background-size:cover;background-position:center;";
 }
 
-/* ===================== PUBLICACIONES DEL PERFIL (igual que index) ===================== */
-// Posts del usuario del perfil + total reacciones (todas)
+/* ===================== PUBLICACIONES DEL PERFIL ===================== */
 $sqlP = "
 SELECT
   p.id_publicacion,
@@ -92,11 +91,12 @@ SELECT
   p.etiquetas,
   p.fecha_publicacion,
   u.nombre_usuario,
+  u.foto_perfil,
   COUNT(r.id_usuario) AS reacciones_count
 FROM publicacion p
 JOIN usuario u ON u.id_usuario = p.id_usuario
 LEFT JOIN reaccion r ON r.id_publicacion = p.id_publicacion
-WHERE p.id_usuario = ?
+WHERE p.id_usuario = ? 
 GROUP BY p.id_publicacion
 ORDER BY p.fecha_publicacion DESC
 ";
@@ -136,7 +136,7 @@ function resumenReacciones($conexion, int $idPublicacion): array {
   return $out;
 }
 
-// Comentarios: count + últimos 3
+// Comentarios: Solo count
 function contarComentarios($conexion, int $idPublicacion): int {
   $sql = "SELECT COUNT(*) AS total FROM comentario WHERE id_publicacion = ?";
   $stmt = mysqli_prepare($conexion, $sql);
@@ -148,24 +148,6 @@ function contarComentarios($conexion, int $idPublicacion): int {
   return (int)($row["total"] ?? 0);
 }
 
-function ultimosComentarios($conexion, int $idPublicacion, int $limite = 3): array {
-  $sql = "SELECT c.texto, c.fecha_comentario, u.nombre_usuario
-          FROM comentario c
-          JOIN usuario u ON u.id_usuario = c.id_usuario
-          WHERE c.id_publicacion = ?
-          ORDER BY c.id_comentario DESC
-          LIMIT $limite";
-  $stmt = mysqli_prepare($conexion, $sql);
-  mysqli_stmt_bind_param($stmt, "i", $idPublicacion);
-  mysqli_stmt_execute($stmt);
-  $res = mysqli_stmt_get_result($stmt);
-  $out = [];
-  while ($row = mysqli_fetch_assoc($res)) $out[] = $row;
-  mysqli_stmt_close($stmt);
-  return array_reverse($out);
-}
-/* ================================================================================ */
-
 /* ===================== MODALES: seguidores / seguidos ===================== */
 $listaModal = [];
 $esFollowers = ($modal === 'followers');
@@ -173,7 +155,7 @@ $esFollowing = ($modal === 'following');
 
 if ($modal !== '') {
   if ($esFollowers) {
-    // personas que SIGUEN a idPerfil (seguidor.id_usuario -> usuario)
+    // personas que SIGUEN a idPerfil
     $sqlL = "
       SELECT u.id_usuario, u.nombre_usuario, u.foto_perfil,
              CASE WHEN s2.id_usuario IS NULL THEN 0 ELSE 1 END AS yo_sigo
@@ -186,7 +168,7 @@ if ($modal !== '') {
     $stmtL = mysqli_prepare($conexion, $sqlL);
     mysqli_stmt_bind_param($stmtL, "ii", $idYo, $idPerfil);
   } else {
-    // personas a las que idPerfil SIGUE (seguidor.id_seguido -> usuario)
+    // personas a las que idPerfil SIGUE
     $sqlL = "
       SELECT u.id_usuario, u.nombre_usuario, u.foto_perfil,
              CASE WHEN s2.id_usuario IS NULL THEN 0 ELSE 1 END AS yo_sigo
@@ -208,11 +190,7 @@ if ($modal !== '') {
 /* ====================================================================== */
 
 $emoji = [
-  "LIKE" => "👍",
-  "LOVE" => "❤️",
-  "LAUGH" => "😂",
-  "WOW" => "😮",
-  "SAD" => "😢",
+  "LIKE" => "👍", "LOVE" => "❤️", "LAUGH" => "😂", "WOW" => "😮", "SAD" => "😢",
 ];
 $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
 ?>
@@ -222,6 +200,11 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
   <meta charset="UTF-8">
   <title>Perfil</title>
   <link rel="stylesheet" href="estilos/estilos.css">
+  <link rel="stylesheet" href="estilos/index.css">
+  
+  <link rel="stylesheet" href="estilos/perfil.css">
+  
+  <link rel="stylesheet" href="estilos/modal_comentario.css">
   <link rel="icon" href="estilos/imagenes/sin_fondo_con_letras.png">
 </head>
 <body>
@@ -255,201 +238,206 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
 
       <div id="topbar-actions">
         <a href="create.php"><button id="create-btn">Create</button></a>
-
         <a href="perfil.php" title="Perfil" style="display:inline-block;">
           <div id="user-avatar" style="<?= $miAvatarStyle ?>"></div>
         </a>
       </div>
     </header>
 
-    <div id="content" style="grid-template-columns: 1fr;">
+    <div id="content-perfil">
+      
       <main id="feed">
 
-        <!-- ====== CABECERA PERFIL ====== -->
-        <article class="post" style="display:block;">
-          <div class="post-body">
-
-            <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
-              <div style="width:110px;height:110px;border-radius:50%;background:#ddd;overflow:hidden;">
+        <article class="profile-header-card">
+          
+            <div class="profile-header-top">
+              
+              <div class="profile-avatar-large">
                 <?php if ($srcFoto !== ''): ?>
                   <img src="<?= $srcFoto ?>" alt="foto perfil" style="width:100%;height:100%;object-fit:cover;">
                 <?php endif; ?>
               </div>
 
               <div style="flex:1; min-width:240px;">
-                <h2 style="margin-bottom:6px;"><?= h($u['nombre_usuario']) ?></h2>
+                <h2 style="margin-bottom:8px; font-size:26px;"><?= h($u['nombre_usuario']) ?></h2>
 
-                <p class="post-meta" style="margin-bottom:10px;">
+                <p class="post-meta" style="margin-bottom:14px; font-size:15px;">
                   <a class="perfil-link" href="perfil.php?id=<?= (int)$idPerfil ?>&modal=followers">
-                    Seguidores: <b><?= (int)$followers ?></b>
+                    <b><?= (int)$followers ?></b> Seguidores
                   </a>
-                  ·
+                  <span style="margin:0 8px;">·</span>
                   <a class="perfil-link" href="perfil.php?id=<?= (int)$idPerfil ?>&modal=following">
-                    Seguidos: <b><?= (int)$following ?></b>
+                    <b><?= (int)$following ?></b> Seguidos
                   </a>
                 </p>
 
                 <?php if (!$esMiPerfil): ?>
-                  <a href="chat.php?id=<?= (int)$idPerfil ?>" class="btn-chat">Chat</a>
-
-                  <form action="php/seguir_noseguir.php" method="post" style="margin:0; display:inline-block;">
-                    <input type="hidden" name="id_seguido" value="<?= (int)$idPerfil ?>">
-                    <button class="btn-primary" type="submit" style="padding:10px 14px;border-radius:12px;">
-                      <?= ($yoLoSigo === 1) ? "Dejar de seguir" : "Seguir" ?>
-                    </button>
-                  </form>
-                <?php endif; ?>
-              </div>
-            </div>
-
-            <hr style="border:none;border-top:1px solid #eee;margin:18px 0;">
-
-            <h3 style="margin-bottom:10px;">Biografía</h3>
-            <p style="margin-bottom:14px;"><?= nl2br(h($u['biografia'] ?? '')) ?></p>
-
-            <?php if ($esMiPerfil): ?>
-              <h3 style="margin:20px 0 10px;">Editar perfil</h3>
-
-              <?php if (isset($_GET['ok'])): ?>
-                <p style="color:#2ecc71;margin-bottom:10px;">Cambios guardados ✅</p>
-              <?php endif; ?>
-              <?php if (isset($_GET['error'])): ?>
-                <p class="error-msg">No se pudo guardar. Revisa la imagen o los campos.</p>
-              <?php endif; ?>
-
-              <form action="php/perfil_update.php" method="post" enctype="multipart/form-data"
-                    style="display:flex; flex-direction:column; gap:12px;">
-                <label>Nueva foto de perfil (opcional)</label>
-                <input class="input" type="file" name="foto_perfil" accept=".jpg,.jpeg,.png,.webp">
-
-                <label>Biografía</label>
-                <textarea class="input" name="biografia" rows="4"><?= h($u['biografia'] ?? '') ?></textarea>
-
-                <button class="btn-primary" type="submit" style="width:fit-content;">Guardar</button>
-              </form>
-            <?php endif; ?>
-
-          </div>
-        </article>
-
-        <!-- ====== PUBLICACIONES DEL PERFIL (IGUAL QUE INDEX) ====== -->
-        <h3 style="margin:18px 0;">Publicaciones</h3>
-
-        <?php if (count($pubsPerfil) === 0): ?>
-          <article class="post">
-            <div class="post-body">
-              <h2 class="post-title">Todavía no hay publicaciones</h2>
-              <p class="post-text">Este usuario aún no ha publicado nada.</p>
-            </div>
-          </article>
-        <?php endif; ?>
-
-        <?php foreach ($pubsPerfil as $p): ?>
-          <?php
-            $postId = (int)$p["id_publicacion"];
-            $miTipo = miReaccion($conexion, $idYo, $postId);
-            $iconoPrincipal = $emoji[$miTipo] ?? "♡";
-
-            $resumen = resumenReacciones($conexion, $postId);
-            $numComentarios = contarComentarios($conexion, $postId);
-            $comentarios = ultimosComentarios($conexion, $postId, 3);
-          ?>
-
-          <article class="post">
-
-            <div class="post-votes">
-
-              <div class="reac">
-                <button class="vote up reac-btn" type="button" data-post="<?= $postId ?>" title="Reaccionar">
-                  <?= $iconoPrincipal ?>
-                </button>
-
-                <div class="reac-menu" id="reac-menu-<?= $postId ?>">
-                  <?php foreach ($orden as $t): ?>
-                    <form action="php/reaccion.php" method="post" style="margin:0;">
-                      <input type="hidden" name="id_publicacion" value="<?= $postId ?>">
-                      <input type="hidden" name="tipo" value="<?= $t ?>">
-                      <button class="reac-opt" type="submit" title="<?= h($t) ?>">
-                        <?= $emoji[$t] ?>
+                  <div style="display:flex; gap:10px; align-items:center; margin-top:18px;">
+                    <a href="chat.php?id=<?= (int)$idPerfil ?>" class="btn-chat" style="padding: 10px 16px; font-size:14px;">Chat</a>
+                    <form action="php/seguir_noseguir.php" method="post" style="margin:0;">
+                      <input type="hidden" name="id_seguido" value="<?= (int)$idPerfil ?>">
+                      <button class="btn-primary" type="submit" style="padding:10px 20px; border-radius:12px; font-size:14px;">
+                        <?= ($yoLoSigo === 1) ? "Dejar de seguir" : "Seguir" ?>
                       </button>
                     </form>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-
-              <span class="vote-count"><?= (int)$p["reacciones_count"] ?></span>
-
-            </div>
-
-            <div class="post-body">
-
-              <h2 class="post-title">Publicación #<?= $postId ?></h2>
-
-              <p class="post-meta">
-                Posted by <span class="post-author">u/<?= h($p['nombre_usuario']) ?></span>
-                <?php if (!empty($p['ubicacion'])): ?>
-                  · <?= h($p['ubicacion']) ?>
-                <?php endif; ?>
-              </p>
-
-              <?php if (!empty($p['imagen'])): ?>
-                <div style="margin:10px 0;">
-                  <img src="uploads/<?= h($p['imagen']) ?>" alt="publicación" style="max-width:100%;border-radius:12px;">
-                </div>
-              <?php endif; ?>
-
-              <p class="post-text"><?= nl2br(h($p['pie_de_foto'])) ?></p>
-
-              <?php if (!empty($p['etiquetas'])): ?>
-                <p class="post-meta">#<?= h($p['etiquetas']) ?></p>
-              <?php endif; ?>
-
-              <div class="post-meta" style="margin-top:10px;">
-                <?php
-                  $trozos = [];
-                  foreach ($orden as $t) {
-                    if (!empty($resumen[$t])) $trozos[] = $emoji[$t] . " " . (int)$resumen[$t];
-                  }
-                  echo !empty($trozos) ? implode(" · ", $trozos) : "Sin reacciones todavía";
-                ?>
-              </div>
-
-              <div style="margin-top:14px;">
-                <div class="post-meta" style="margin-bottom:8px;">💬 Comentarios (<?= $numComentarios ?>)</div>
-
-                <?php if ($numComentarios === 0): ?>
-                  <div class="post-meta" style="margin-bottom:10px;">Sé el primero en comentar 😊</div>
-                <?php else: ?>
-                  <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-                    <?php foreach ($comentarios as $c): ?>
-                      <div style="background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:12px;padding:10px;">
-                        <div style="font-weight:700;font-size:13px;">
-                          u/<?= h($c["nombre_usuario"]) ?>
-                          <span class="post-meta" style="margin-left:8px;"><?= h($c["fecha_comentario"]) ?></span>
-                        </div>
-                        <div style="margin-top:6px;font-size:14px;"><?= nl2br(h($c["texto"])) ?></div>
-                      </div>
-                    <?php endforeach; ?>
                   </div>
                 <?php endif; ?>
+              </div>
+            </div>
 
-                <form action="php/comentar.php" method="post" style="display:flex; gap:10px; align-items:center;">
-                  <input type="hidden" name="id_publicacion" value="<?= $postId ?>">
-                  <input class="input" type="text" name="texto" placeholder="Añade un comentario..." required>
-                  <button class="btn-primary" type="submit" style="padding:10px 14px;border-radius:12px;">Enviar</button>
+            <hr class="profile-divider">
+
+            <h3>Biografía</h3>
+            <p style="margin-bottom:14px; line-height:1.6; color:#4b5563;"><?= nl2br(h($u['biografia'] ?? '')) ?></p>
+
+            <?php if ($esMiPerfil): ?>
+              <h3>Editar perfil</h3>
+
+              <?php if (isset($_GET['ok'])): ?>
+                <div style="background:#dcfce7; color:#166534; padding:12px 16px; border-radius:12px; font-size:14px; margin-bottom:16px; border:1px solid #bbf7d0;">
+                  Cambios guardados correctamente ✅
+                </div>
+              <?php endif; ?>
+              
+              <?php if (isset($_GET['error'])): ?>
+                <div class="error-msg" style="margin-bottom:16px;">No se pudo guardar. Revisa la imagen o los campos.</div>
+              <?php endif; ?>
+
+              <div class="edit-profile-box">
+                <form action="php/perfil_update.php" method="post" enctype="multipart/form-data" id="formEditProfile">
+                  
+                  <div class="edit-group">
+                    <label class="edit-label">Cambiar foto de perfil</label>
+                    <input type="file" id="filePhoto" name="foto_perfil" accept=".jpg,.jpeg,.png,.webp" class="input-file-hidden">
+                    <label for="filePhoto" class="input-file-trigger" id="fileLabel">
+                      <span style="font-size: 28px;">📷</span>
+                      <span id="fileName" style="font-weight:500;">Haz click para seleccionar una nueva imagen...</span>
+                    </label>
+                  </div>
+
+                  <div class="edit-group" style="margin-top: 24px;">
+                    <label class="edit-label">Biografía</label>
+                    <textarea class="input edit-textarea" name="biografia" placeholder="Escribe algo sobre ti..."><?= h($u['biografia'] ?? '') ?></textarea>
+                  </div>
+
+                  <div style="text-align: right; margin-top: 24px;">
+                     <button class="btn-primary" type="submit" style="padding: 12px 32px; font-size: 15px;">Guardar cambios</button>
+                  </div>
                 </form>
               </div>
+              
+              <script>
+                document.getElementById('filePhoto').addEventListener('change', function(e) {
+                  const fileName = e.target.files[0]?.name || "Haz click para seleccionar una nueva imagen...";
+                  document.getElementById('fileName').textContent = fileName;
+                  document.getElementById('fileLabel').classList.add('file-selected');
+                });
+              </script>
 
-            </div>
-          </article>
-        <?php endforeach; ?>
+            <?php endif; ?>
+
+        </article>
+
+        <h3 style="margin:18px 0;">Publicaciones</h3>
+
+        <div class="profile-feed" style="max-width: 600px; margin: 0 auto;">
+
+            <?php if (empty($pubsPerfil)): ?>
+              <div style="text-align:center; padding: 40px; color:#666; background: #fff; border: 1px solid #dbdbdb; border-radius: 3px;">
+                <p class="post-text">Este usuario aún no ha publicado nada.</p>
+              </div>
+            <?php else: ?>
+
+              <?php foreach ($pubsPerfil as $p): ?>
+                <?php
+                  $postId = (int)$p["id_publicacion"];
+                  $miTipo = miReaccion($conexion, $idYo, $postId);
+                  $iconoPrincipal = $emoji[$miTipo] ?? "♡";
+                  $resumen = resumenReacciones($conexion, $postId);
+                  $numComentarios = contarComentarios($conexion, $postId);
+
+                  $avatarAutor = "";
+                  if (!empty($p["foto_perfil"])) {
+                    $avatarAutor = "uploads/perfiles/" . h($p["foto_perfil"]);
+                  }
+                  $perfilLink = "perfil.php?id=" . (int)$p["id_usuario"];
+                ?>
+
+                <article class="post" id="post-<?= $postId ?>" style="margin-bottom: 30px;">
+                  <div class="post-head">
+                    <a class="post-avatar" href="<?= h($perfilLink) ?>">
+                      <?php if ($avatarAutor): ?>
+                        <img src="<?= h($avatarAutor) ?>" alt="">
+                      <?php else: ?>
+                        <span></span>
+                      <?php endif; ?>
+                    </a>
+                    <div class="post-headInfo">
+                      <a class="post-user" href="<?= h($perfilLink) ?>"><?= h($p["nombre_usuario"]) ?></a>
+                      <?php if (!empty($p["ubicacion"])): ?>
+                        <div class="post-loc"><?= h($p["ubicacion"]) ?></div>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+
+                  <?php if (!empty($p['imagen'])): ?>
+                    <div class="post-media">
+                      <img src="uploads/<?= h($p['imagen']) ?>" alt="publicación">
+                    </div>
+                  <?php endif; ?>
+
+                  <div class="post-actionsRow">
+                    <div class="reac">
+                      <button class="vote up reac-btn" type="button" data-post="<?= $postId ?>" title="Reaccionar">
+                        <?= $iconoPrincipal ?>
+                      </button>
+                      <div class="reac-menu" id="reac-menu-<?= $postId ?>">
+                        <?php foreach ($orden as $t): ?>
+                          <form action="php/reaccion.php" method="post" style="margin:0;">
+                            <input type="hidden" name="id_publicacion" value="<?= $postId ?>">
+                            <input type="hidden" name="tipo" value="<?= $t ?>">
+                            <button class="reac-opt" type="submit" title="<?= h($t) ?>">
+                              <?= $emoji[$t] ?>
+                            </button>
+                          </form>
+                        <?php endforeach; ?>
+                      </div>
+                    </div>
+
+                    <button type="button" class="post-commentBtn js-open-comments" data-post="<?= $postId ?>">
+                      💬 Comentarios (<span id="ccount-<?= $postId ?>"><?= (int)$numComentarios ?></span>)
+                    </button>
+                  </div>
+
+                  <div class="post-meta" style="margin-top:8px;">
+                    <span id="reac-meta-<?= $postId ?>">
+                      <?php
+                        $trozos = [];
+                        foreach ($orden as $t) if (!empty($resumen[$t])) $trozos[] = $emoji[$t] . " " . (int)$resumen[$t];
+                        echo !empty($trozos) ? implode(" · ", $trozos) : "Sin reacciones todavía";
+                      ?>
+                    </span>
+                    · Total: <b id="reac-total-<?= $postId ?>"><?= (int)$p["reacciones_count"] ?></b>
+                  </div>
+
+                  <div class="post-textWrap">
+                    <span class="post-userInline"><?= h($p["nombre_usuario"]) ?></span>
+                    <span><?= nl2br(h($p["pie_de_foto"])) ?></span>
+                  </div>
+
+                  <?php if (!empty($p['etiquetas'])): ?>
+                    <div class="post-tags">#<?= h($p['etiquetas']) ?></div>
+                  <?php endif; ?>
+                </article>
+              <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
 
       </main>
     </div>
   </div>
 </div>
 
-<!-- ===================== MODAL ===================== -->
 <?php if ($modal !== ''): ?>
   <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal-card" role="dialog" aria-modal="true">
@@ -471,19 +459,15 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
               $fotoP = $row['foto_perfil'] ?? '';
               $yoSigoA = (int)($row['yo_sigo'] ?? 0);
 
-              $avatar = !empty($fotoP)
-                ? "uploads/perfiles/" . h($fotoP)
-                : "";
+              $avatar = !empty($fotoP) ? "uploads/perfiles/" . h($fotoP) : "";
             ?>
             <div class="modal-row">
               <a class="modal-user" href="perfil.php?id=<?= $idU ?>">
                 <div class="modal-avatar" style="<?= $avatar ? "background-image:url('".$avatar."')" : "" ?>"></div>
                 <div class="modal-name"><?= h($nombre) ?></div>
               </a>
-
               <div class="modal-actions">
                 <?php if ($esFollowers): ?>
-                  <!-- Si es SEGUIDOR: botón seguir si no lo sigo -->
                   <?php if ($idU !== $idYo): ?>
                     <?php if ($yoSigoA === 0): ?>
                       <form action="php/seguir_noseguir.php" method="post" style="margin:0;">
@@ -494,8 +478,6 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
                       <button class="modal-btn modal-btn-muted" type="button" disabled>Siguiendo</button>
                     <?php endif; ?>
                   <?php endif; ?>
-
-                  <!-- Suprimir seguidor (solo si es mi perfil) -->
                   <?php if ($esMiPerfil && $idU !== $idYo): ?>
                     <form action="php/eliminar_seguidor.php" method="post" style="margin:0;">
                       <input type="hidden" name="id_usuario" value="<?= $idU ?>">
@@ -504,9 +486,7 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
                       <button class="modal-btn modal-btn-danger" type="submit">Suprimir</button>
                     </form>
                   <?php endif; ?>
-
                 <?php else: ?>
-                  <!-- Seguidos: suprimir = dejar de seguir (solo si es mi perfil) -->
                   <?php if ($esMiPerfil && $idU !== $idYo): ?>
                     <form action="php/dejar_de_seguir.php" method="post" style="margin:0;">
                       <input type="hidden" name="id_seguido" value="<?= $idU ?>">
@@ -523,26 +503,44 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
       </div>
     </div>
   </div>
-
   <script>
-    // cerrar al clicar fuera
     (function(){
       const bg = document.getElementById("modalBackdrop");
       if(!bg) return;
       bg.addEventListener("click", (e) => {
-        if(e.target === bg){
-          window.location.href = "perfil.php?id=<?= (int)$idPerfil ?>";
-        }
+        if(e.target === bg) window.location.href = "perfil.php?id=<?= (int)$idPerfil ?>";
       });
       document.addEventListener("keydown", (e) => {
-        if(e.key === "Escape"){
-          window.location.href = "perfil.php?id=<?= (int)$idPerfil ?>";
-        }
+        if(e.key === "Escape") window.location.href = "perfil.php?id=<?= (int)$idPerfil ?>";
       });
     })();
   </script>
 <?php endif; ?>
 
+<div id="commentsModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Comentarios">
+    <div class="modal-head">
+      <div class="modal-title">Comentarios</div>
+      <button id="closeModal" type="button" class="modal-close">Cerrar</button>
+    </div>
+    <div id="modalBody" class="modal-body">
+      <div id="modalComments" class="modal-list">
+        <div class="c-item">Cargando…</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <form id="modalCommentForm" class="modal-form" action="php/comentar.php" method="post">
+        <input type="hidden" id="modalPostId" name="id_publicacion" value="">
+        <input id="modalTexto" class="input" type="text" name="texto" placeholder="Añade un comentario..." required>
+        <button class="btn-primary" type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="js/reacciones_ajax.js"></script>
 <script src="js/reacciones.js"></script>
+<script src="js/comentarios.js"></script>
+
 </body>
 </html>

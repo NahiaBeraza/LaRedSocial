@@ -294,7 +294,7 @@ body.modal-open{
 /* BODY – NO SCROLL AQUÍ */
 #commentsModal .modal-body{
   flex:1 1 auto;
-  min-height:0;               /* 🔑 CLAVE para que NO crezca */
+  min-height:0;               
   padding:16px 18px;
   overflow:hidden;
 
