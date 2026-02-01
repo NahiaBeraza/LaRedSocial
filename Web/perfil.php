@@ -199,12 +199,11 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
 <head>
   <meta charset="UTF-8">
   <title>Perfil</title>
+  <link rel="stylesheet" href="estilos/modal.css">
   <link rel="stylesheet" href="estilos/estilos.css">
   <link rel="stylesheet" href="estilos/index.css">
-  
   <link rel="stylesheet" href="estilos/perfil.css">
-  
-  <link rel="stylesheet" href="estilos/modal_comentario.css">
+
   <link rel="icon" href="estilos/imagenes/sin_fondo_con_letras.png">
 </head>
 <body>

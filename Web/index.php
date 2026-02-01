@@ -94,7 +94,7 @@ function contarComentarios($conexion, int $idPublicacion): int { // Devuelve cu√
   <title>√çndice</title>
   <link rel="stylesheet" href="estilos/estilos.css">
   <link rel="stylesheet" href="estilos/index.css">
-  <link rel="stylesheet" href="estilos/modal_comentario.css">
+
   <link rel="icon" href="estilos/imagenes/sin_fondo_con_letras.png">
 </head>
 <body>
@@ -109,7 +109,6 @@ function contarComentarios($conexion, int $idPublicacion): int { // Devuelve cu√
     <nav id="sidebar-nav">
       <ul class="nav-section">
         <li class="nav-item active">Home</li>
-        <li class="nav-item">All</li>
         <li class="nav-item">
           <a href="usuarios.php">Usuarios</a>
         </li>
@@ -136,7 +135,7 @@ function contarComentarios($conexion, int $idPublicacion): int { // Devuelve cu√
 
     <header id="topbar">
       <div id="search-container">
-        <input id="search-input" type="text" placeholder="Search stories">
+        <input id="search-input" type="text" placeholder="Buscar publicaci√≥n">
       </div>
 
       <div id="topbar-actions">

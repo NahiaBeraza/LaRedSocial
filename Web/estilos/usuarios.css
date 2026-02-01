@@ -1,0 +1,92 @@
+/* === AJUSTE DEL LAYOUT PRINCIPAL === */
+/* En esta página no queremos panel derecho, así que forzamos 1 sola columna */
+#content {
+    grid-template-columns: 1fr !important;
+}
+
+/* === TARJETA DE USUARIO === */
+.usuario-card {
+    /* Hereda estilos de .post pero ajustamos la alineación */
+    align-items: center; 
+    padding: 22px; 
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usuario-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px -5px rgba(108, 99, 255, 0.15);
+}
+
+/* === BOTONES DE ACCIÓN (Chat / Seguir) === */
+.usuario-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-left: auto; /* Empuja los botones a la derecha */
+}
+
+/* Estilo específico para el botón de chat en esta tarjeta */
+.btn-chat-user {
+    background: rgba(108,99,255,0.1); 
+    color: var(--p); 
+    font-weight: 700; 
+    border-radius: 12px; 
+    padding: 10px 18px;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.btn-chat-user:hover {
+    background: var(--p);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(108,99,255,0.3);
+}
+
+/* === MENSAJES Y CONTADORES === */
+#sin-resultados {
+    text-align: center;
+    padding: 30px;
+    background: #fff;
+    border-radius: 20px;
+    color: var(--mut);
+    font-weight: 500;
+    box-shadow: var(--sh-caja);
+}
+
+#contador-usuarios {
+    font-weight: 700;
+    font-size: 13px;
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* === RESPONSIVE (Móviles) === */
+@media (max-width: 650px) {
+    /* En pantallas pequeñas, reorganizamos el contenido */
+    .usuario-card .post-body > div {
+        flex-wrap: wrap; 
+    }
+
+    /* La foto y el nombre ocupan todo el ancho superior */
+    .usuario-info {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    /* Los botones pasan abajo y se alinean a la derecha */
+    .usuario-actions {
+        width: 100%;
+        justify-content: flex-end;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f5; /* Línea separadora sutil */
+    }
+    
+    .btn-chat-user, .btn-primary {
+        flex: 1; /* Botones más grandes para tocar con el dedo */
+        text-align: center;
+        justify-content: center;
+    }
+}

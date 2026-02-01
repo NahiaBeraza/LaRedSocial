@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/php/require_login.php"; // Obliga a que el usuario esté logueado antes de poder crear una publicación
+require_once __DIR__ . "/php/require_login.php";
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -13,43 +13,47 @@ require_once __DIR__ . "/php/require_login.php"; // Obliga a que el usuario est�
 
   <div class="create-post-container">
     <div class="create-post-card">
-    <h2>Crear publicación</h2>
+      <h2>Crear publicación</h2>
 
-    <?php if (isset($_GET['error'])): ?> <!-- Si viene un error por GET, muestro el mensaje correspondiente -->
-      <p class="error-msg">
-        <?php
-          $e = $_GET['error']; // Guardo el tipo de error recibido por la URL
+      <?php if (isset($_GET['error'])): ?>
+        <p class="error-msg">
+          <?php
+            $e = $_GET['error'];
+            if ($e === 'campos') echo "Debes subir una imagen y escribir un texto.";
+            else if ($e === 'img') echo "Imagen no válida (JPG/PNG/WEBP) o demasiado grande.";
+            else echo "Error al publicar.";
+          ?>
+        </p>
+      <?php endif; ?>
 
-          // Según el código de error, muestro un mensaje distinto
-          if ($e === 'campos') echo "Debes subir una imagen y escribir un texto.";
-          else if ($e === 'img') echo "Imagen no válida (JPG/PNG/WEBP) o demasiado grande.";
-          else echo "Error al publicar.";
-        ?>
-      </p>
-    <?php endif; ?>
+      <form class="create-post-form" action="php/publicar_process.php" method="post" enctype="multipart/form-data">
 
-    <form action="php/publicar_process.php" method="post" enctype="multipart/form-data">
-      <!-- enctype multipart porque se envía una imagen -->
+        <div class="form-group">
+          <label for="imagen">Imagen</label>
+          <input class="file-input" type="file" name="imagen" accept=".jpg,.jpeg,.png,.webp" required>
+        </div>
 
-      <label>Imagen</label><br>
-      <input type="file" name="imagen" accept=".jpg,.jpeg,.png,.webp" required><br><br>
-      <!-- Campo obligatorio para subir la imagen de la publicación -->
+        <div class="form-group">
+          <label for="pie_de_foto">Texto (pie de foto)</label>
+          <textarea id="pie_de_foto" name="pie_de_foto" rows="4" class="input" required></textarea>
+        </div>
 
-      <label>Texto (pie de foto)</label><br>
-      <textarea name="pie_de_foto" rows="4" class="input" style="width:100%;" required></textarea><br><br>
-      <!-- Texto principal de la publicación -->
+        <div class="form-group">
+          <label for="ubicacion">Ubicación (opcional)</label>
+          <input id="ubicacion" type="text" name="ubicacion" class="input" placeholder="Madrid, España">
+        </div>
 
-      <label>Ubicación (opcional)</label><br>
-      <input type="text" name="ubicacion" class="input" placeholder="Madrid, España"><br><br>
-      <!-- Ubicación opcional -->
+        <div class="form-group">
+          <label for="etiquetas">Etiquetas (opcional)</label>
+          <input id="etiquetas" type="text" name="etiquetas" class="input" placeholder="viaje,amigos">
+        </div>
 
-      <label>Etiquetas (opcional)</label><br>
-      <input type="text" name="etiquetas" class="input" placeholder="viaje,amigos"><br><br>
-      <!-- Etiquetas separadas por comas -->
+        <div class="form-actions">
+          <button class="btn-primary" type="submit">Publicar</button>
+          <a class="btn-secondary" href="index.php">Volver</a>
+        </div>
 
-      <button class="btn-primary" type="submit">Publicar</button>
-      <a class="btn-secondary" href="index.php" style="margin-left:10px;">Volver</a>
-    </form>
+      </form>
     </div>
   </div>
 

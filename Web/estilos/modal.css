@@ -1,0 +1,121 @@
+/* estilos/modal.css */
+
+/* Fondo y Tarjeta */
+.modal-backdrop {
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-card {
+    background: #fff; width: 100%; max-width: 450px; max-height: 85vh;
+    border-radius: 24px; box-shadow: 0 30px 60px -10px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+/* Cabecera */
+.modal-head {
+    padding: 18px 25px; border-bottom: 1px solid #f0f0f5;
+    display: flex; align-items: center; justify-content: space-between; background: #fff;
+}
+.modal-title { font-size: 18px; font-weight: 800; color: #111827; }
+.modal-close {
+    width: 32px; height: 32px; border-radius: 50%; background: #f3f4f6; color: #666;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; font-weight: 700; cursor: pointer; transition: 0.2s;
+}
+.modal-close:hover { background: #e5e7eb; color: #000; }
+
+/* Cuerpo */
+.modal-body { padding: 0; overflow-y: auto; flex: 1; background: #fff; }
+.modal-list { padding: 10px 20px; }
+
+/* --- FILA DE USUARIO (Alineación perfecta) --- */
+.modal-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 0; border-bottom: 1px solid #f0f0f5; width: 100%;
+}
+.modal-row:last-child { border-bottom: none; }
+
+/* Izquierda: Avatar y Nombre */
+.modal-user-info {
+    display: flex !important; align-items: center !important; gap: 12px;
+    text-decoration: none; color: inherit; flex: 1; min-width: 0;
+}
+.modal-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background-color: #eee; background-size: cover; background-position: center;
+    border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0;
+}
+.modal-name {
+    font-size: 14px; font-weight: 700; color: #333;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Derecha: Botones */
+.modal-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* --- BOTONES (Estilo compartido) --- */
+/* Rojo (Expulsar / Eliminar) */
+.modal-btn-danger {
+    background-color: #ef4444 !important; color: white !important;
+    border: none; padding: 8px 14px; border-radius: 12px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25); transition: 0.2s;
+}
+.modal-btn-danger:hover { transform: translateY(-2px); background-color: #dc2626 !important; }
+
+/* Morado (Seguir / Añadir) */
+.modal-btn-primary {
+    background-color: #6c63ff !important; color: white !important;
+    border: none; padding: 8px 14px; border-radius: 12px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(108, 99, 255, 0.25); transition: 0.2s;
+}
+.modal-btn-primary:hover { transform: translateY(-2px); background-color: #584ff5 !important; }
+
+/* Gris (Siguiendo) */
+.modal-btn-muted {
+    background: #f3f4f6 !important; color: #9ca3af !important;
+    padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; border: none; cursor: default;
+}
+
+/* --- EXTRAS PARA EL CHAT (Añadir y Salir) --- */
+.modal-add-form {
+    padding: 20px; background: #f9fafb; border-top: 1px solid #eee;
+    display: flex; gap: 10px;
+}
+.modal-select {
+    flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #d1d5db; outline: none;
+}
+.modal-footer { padding: 20px; text-align: center; }
+.btn-block-danger {
+    width: 100%; padding: 12px; border-radius: 14px;
+    background: #fee2e2 !important; color: #ef4444 !important;
+    font-weight: 700; border: 1px solid #fecaca; cursor: pointer; transition: 0.2s;
+}
+.btn-block-danger:hover { background: #ef4444 !important; color: #fff !important; }
+
+/* --- BOTÓN GRANDE DE SALIR (Pegar al final de modal.css) --- */
+.btn-block-danger {
+    width: 100%;
+    margin-top: 20px;       /* Separación de arriba */
+    padding: 14px;
+    border-radius: 16px;
+    background-color: #fee2e2 !important; /* Rojo clarito de fondo */
+    color: #ef4444 !important;            /* Letras rojas */
+    font-weight: 800;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-block-danger:hover {
+    background-color: #ef4444 !important; /* Se vuelve rojo fuerte */
+    color: white !important;              /* Letras blancas */
+    transform: translateY(-2px);
+}
