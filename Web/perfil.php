@@ -211,7 +211,9 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
 <div id="app">
 
   <aside id="sidebar">
-    <div id="sidebar-logo"><span class="logo-text">añap</span></div>
+    <div id="sidebar-logo">
+      <img src="estilos/imagenes/sin_fondo_con_letras.png" alt="Logo" class="logo-img">
+    </div>
 
     <nav id="sidebar-nav">
       <ul class="nav-section">
@@ -232,7 +234,7 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
   <div id="main-layout">
     <header id="topbar">
       <div id="search-container">
-        <input id="search-input" type="text" placeholder="Search stories">
+        <input id="search-input" type="text" placeholder="Buscar publicación">
       </div>
 
       <div id="topbar-actions">

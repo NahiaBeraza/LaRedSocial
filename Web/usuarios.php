@@ -56,7 +56,9 @@ mysqli_stmt_close($stmt);
 <div id="app">
 
   <aside id="sidebar">
-    <div id="sidebar-logo"><span class="logo-text">AÑA</span></div>
+    <div id="sidebar-logo">
+      <img src="estilos/imagenes/sin_fondo_con_letras.png" alt="Logo" class="logo-img">
+    </div>
     <nav id="sidebar-nav">
       <ul class="nav-section">
         <li class="nav-item"><a href="index.php" style="color:inherit;text-decoration:none;">Home</a></li>

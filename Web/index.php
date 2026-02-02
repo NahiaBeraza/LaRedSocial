@@ -103,7 +103,7 @@ function contarComentarios($conexion, int $idPublicacion): int { // Devuelve cu�
 
   <aside id="sidebar">
     <div id="sidebar-logo">
-      <span class="logo-text">AÑA AÑA</span>
+      <img src="estilos/imagenes/sin_fondo_con_letras.png" alt="Logo" class="logo-img">
     </div>
 
     <nav id="sidebar-nav">

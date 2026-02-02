@@ -52,7 +52,13 @@ body{
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   z-index: 100;
 }
-#sidebar-logo{font-size:26px;font-weight:900;margin-bottom:20px; letter-spacing: -1px;}
+#sidebar-logo{font-size:26px;font-weight:900;
+width: 180px;       
+  height: 60px;
+  margin-bottom: 100px;
+  margin-left: 20px;
+
+}
 .logo-text{
     background: linear-gradient(45deg, var(--p), var(--pd));
     -webkit-background-clip: text;
