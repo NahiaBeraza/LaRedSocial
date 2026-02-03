@@ -1,92 +1,212 @@
-/* === AJUSTE DEL LAYOUT PRINCIPAL === */
-/* En esta página no queremos panel derecho, así que forzamos 1 sola columna */
+
 #content {
-    grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr !important;
 }
 
-/* === TARJETA DE USUARIO === */
+/* =========================================================
+   TARJETA DE USUARIO (ARREGLADA)
+   - Tu CSS anterior tenía .usuario-card duplicado y además
+     forzaba columna + centrado. Aquí lo anulamos.
+   ========================================================= */
+
 .usuario-card {
-    /* Hereda estilos de .post pero ajustamos la alineación */
-    align-items: center; 
-    padding: 22px; 
-    margin-bottom: 20px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* Anular lo que te aplasta la tarjeta */
+  display: block !important;
+  padding: 0 !important;              /* el padding real va en .post-body */
+  align-items: stretch !important;
+  flex-direction: initial !important;
+
+  /* Card más pro */
+  margin-bottom: 14px !important;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Padding real dentro del cuerpo */
+.usuario-card .post-body {
+  padding: 18px 20px !important;
+}
+
+/* Hover suave */
 .usuario-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 35px -5px rgba(108, 99, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(108, 99, 255, 0.14);
 }
 
-/* === BOTONES DE ACCIÓN (Chat / Seguir) === */
+/* =========================================================
+   FILA PRINCIPAL (tu HTML tiene un div inline justo dentro de .post-body)
+   .usuario-card .post-body > div  -> ese es el contenedor de avatar+texto+acciones
+   ========================================================= */
+.usuario-card .post-body > div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  width: 100%;
+}
+
+/* =========================================================
+   AVATAR (tu HTML usa el primer div con style="width:54px;height:54px;...")
+   Lo hacemos más grande y más limpio sin tocar HTML.
+   ========================================================= */
+
+/* Primer hijo = avatar container */
+.usuario-card .post-body > div > div:first-child {
+  width: 76px !important;
+  height: 76px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+
+  /* look */
+  background: #f0f0f5 !important;
+  border: 3px solid rgba(255,255,255,0.95) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08) !important;
+}
+
+/* Imagen dentro del avatar */
+.usuario-card .post-body > div > div:first-child img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* =========================================================
+   TEXTO (tu HTML usa el segundo div como info)
+   ========================================================= */
+.usuario-card .post-body > div > div:nth-child(2) {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+/* Nombre (es el primer div dentro del info) */
+.usuario-card .post-body > div > div:nth-child(2) > div:first-child {
+  font-weight: 900 !important;
+  font-size: 18px !important;
+  line-height: 1.1 !important;
+  margin-bottom: 6px !important;
+}
+
+/* Link del nombre */
+.usuario-card .post-body > div > div:nth-child(2) a {
+  color: var(--txt) !important;
+  text-decoration: none !important;
+}
+
+.usuario-card .post-body > div > div:nth-child(2) a:hover {
+  text-decoration: underline !important;
+}
+
+/* Bio (segundo div dentro del info) */
+.usuario-card .post-body > div > div:nth-child(2) > div:nth-child(2) {
+  font-size: 14px !important;
+  color: var(--mut) !important;
+  line-height: 1.45 !important;
+  max-width: 70ch !important;
+}
+
+/* =========================================================
+   ACCIONES (tu HTML ya tiene .usuario-actions)
+   ========================================================= */
 .usuario-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-left: auto; /* Empuja los botones a la derecha */
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
 }
 
-/* Estilo específico para el botón de chat en esta tarjeta */
+/* Botón Chat */
 .btn-chat-user {
-    background: rgba(108,99,255,0.1); 
-    color: var(--p); 
-    font-weight: 700; 
-    border-radius: 12px; 
-    padding: 10px 18px;
-    font-size: 13px;
-    transition: all 0.2s;
+  background: rgba(108,99,255,0.10) !important;
+  color: var(--p) !important;
+  font-weight: 800 !important;
+  border-radius: 14px !important;
+  padding: 12px 18px !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 86px !important;
 }
 
 .btn-chat-user:hover {
-    background: var(--p);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(108,99,255,0.3);
+  background: var(--p) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 18px rgba(108,99,255,0.22) !important;
 }
 
-/* === MENSAJES Y CONTADORES === */
+/* Botón Seguir/Dejar de seguir (tu HTML usa .btn-primary pero con inline style)
+   Anulamos ese inline para unificar tamaño y hacerlo más pro.
+*/
+.usuario-actions .btn-primary {
+  padding: 12px 18px !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  min-width: 140px !important;
+}
+
+/* =========================================================
+   MENSAJES Y CONTADORES
+   ========================================================= */
 #sin-resultados {
-    text-align: center;
-    padding: 30px;
-    background: #fff;
-    border-radius: 20px;
-    color: var(--mut);
-    font-weight: 500;
-    box-shadow: var(--sh-caja);
+  text-align: center;
+  padding: 30px;
+  background: #fff;
+  border-radius: 20px;
+  color: var(--mut);
+  font-weight: 500;
+  box-shadow: var(--sh-caja);
 }
 
 #contador-usuarios {
-    font-weight: 700;
-    font-size: 13px;
-    background: #fff;
-    padding: 6px 12px;
-    border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-weight: 800;
+  font-size: 13px;
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* === RESPONSIVE (Móviles) === */
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 @media (max-width: 650px) {
-    /* En pantallas pequeñas, reorganizamos el contenido */
-    .usuario-card .post-body > div {
-        flex-wrap: wrap; 
-    }
+  .usuario-card .post-body {
+    padding: 16px !important;
+  }
 
-    /* La foto y el nombre ocupan todo el ancho superior */
-    .usuario-info {
-        width: 100%;
-        margin-bottom: 15px;
-    }
+  /* Permitimos que se reordene en móvil */
+  .usuario-card .post-body > div {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
 
-    /* Los botones pasan abajo y se alinean a la derecha */
-    .usuario-actions {
-        width: 100%;
-        justify-content: flex-end;
-        padding-top: 15px;
-        border-top: 1px solid #f0f0f5; /* Línea separadora sutil */
-    }
-    
-    .btn-chat-user, .btn-primary {
-        flex: 1; /* Botones más grandes para tocar con el dedo */
-        text-align: center;
-        justify-content: center;
-    }
+  /* Avatar un poco más pequeño en móvil */
+  .usuario-card .post-body > div > div:first-child {
+    width: 62px !important;
+    height: 62px !important;
+  }
+
+  /* Acciones debajo, full ancho */
+  .usuario-actions {
+    width: 100% !important;
+    justify-content: flex-end !important;
+    margin-left: 0 !important;
+    padding-top: 12px !important;
+    border-top: 1px solid #f0f0f5 !important;
+  }
+
+  .btn-chat-user,
+  .usuario-actions .btn-primary {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
 }

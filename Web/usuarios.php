@@ -48,7 +48,9 @@ mysqli_stmt_close($stmt);
   <title>Usuarios</title>
   
   <link rel="stylesheet" href="estilos/estilos.css">
+  <link rel="stylesheet" href="estilos/index.css">
   <link rel="stylesheet" href="estilos/usuarios.css">
+
 
   <link rel="icon" href="estilos/imagenes/sin_fondo_con_letras.png">
 </head>
