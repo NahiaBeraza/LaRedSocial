@@ -12,11 +12,12 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); } // E
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"> <!-- Codificación de caracteres -->
-  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Diseño responsive -->
-  <title>Crear grupo</title> <!-- Título de la pestaña -->
-  <link rel="stylesheet" href="estilos/estilos.css"> <!-- Estilos generales -->
-  <link rel="stylesheet" href="estilos/chat.css"> <!-- Estilos reutilizados del chat -->
+  <meta charset="utf-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <title>Crear grupo</title> 
+  <link rel="stylesheet" href="estilos/estilos.css"> 
+  <link rel="stylesheet" href="estilos/chat.css"> 
+  <link rel="icon" href="estilos/imagenes/sin_fondo_con_letras.png">
 </head>
 <body>
 

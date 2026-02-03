@@ -145,13 +145,15 @@ if ($otro) $fotoCabecera = fotoPerfilUrl($otro["foto_perfil"] ?? ""); // Si es c
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"> <!-- Codificación de caracteres -->
-  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Adaptación a móviles -->
-  <title>Chat</title> <!-- Título de la pestaña -->
+  <meta charset="utf-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <title>Chat</title> 
   
-  <link rel="stylesheet" href="estilos/estilos.css"> <!-- Estilos generales -->
-  <link rel="stylesheet" href="estilos/chat.css"> <!-- Estilos específicos del chat -->
-  <link rel="stylesheet" href="estilos/modal.css"> <!-- Estilos de los modales -->
+  <link rel="stylesheet" href="estilos/estilos.css"> 
+  <link rel="stylesheet" href="estilos/chat.css">
+  <link rel="stylesheet" href="estilos/modal.css"> 
+
+  <link rel="icon" href="estilos/imagenes/sin_fondo_con_letras.png">
 </head>
 <body class="<?= $claseBody ?>"> <!-- Aplica clase según si hay chat activo o no -->
 
