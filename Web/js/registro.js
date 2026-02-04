@@ -1,26 +1,63 @@
-// Leo los parámetros de la URL (?error=...)
-const params = new URLSearchParams(window.location.search);
-
-// Contenedor donde muestro el mensaje de error
+// =====================
+// VALIDACIÓN FRONTEND
+// =====================
+const form = document.getElementById("login-form");
+const passInput = document.getElementById("contrasena");
+const userInput = document.getElementById("usuario");
 const errorMsg = document.getElementById("error-msg");
 
-// Si existe el parámetro "error" en la URL
-if (params.has("error")) {
-    errorMsg.style.display = "block"; // Muestro el bloque de error
+form.addEventListener("submit", (e) => {
+    const pass = passInput.value.trim();
 
-    // Error: el nombre de usuario ya existe
+    // Reset estado
+    errorMsg.style.display = "none";
+    errorMsg.textContent = "";
+    passInput.classList.remove("input-error");
+    userInput.classList.remove("input-error");
+
+    // Reglas
+    const tieneMayuscula = /[A-Z]/.test(pass);
+    const tieneNumero = /[0-9]/.test(pass);
+
+    if (
+        pass.length < 8 ||
+        !tieneMayuscula ||
+        !tieneNumero
+    ) {
+        e.preventDefault(); // 🚫 NO ENVÍA
+
+        errorMsg.style.display = "block";
+        errorMsg.textContent =
+            "La contraseña debe tener mínimo 8 caracteres, una mayúscula y un número";
+
+        passInput.classList.add("input-error");
+    }
+});
+
+// =====================
+// ERRORES DESDE LA URL
+// =====================
+const params = new URLSearchParams(window.location.search);
+
+if (params.has("error")) {
+    errorMsg.style.display = "block";
+
     if (params.get("error") === "usuario") {
         errorMsg.textContent = "El nombre de usuario ya existe";
-        document.getElementById("usuario").classList.add("input-error"); // Marco el input de usuario como erróneo
+        userInput.classList.add("input-error");
     }
 
-    // Error: faltan campos por rellenar
     if (params.get("error") === "campos") {
         errorMsg.textContent = "Completa todos los campos";
     }
 
-    // Error genérico durante el registro
     if (params.get("error") === "general") {
         errorMsg.textContent = "Error al registrar el usuario";
+    }
+
+    if (params.get("error") === "pass") {
+        errorMsg.textContent =
+            "La contraseña debe tener mínimo 8 caracteres, una mayúscula y un número";
+        passInput.classList.add("input-error");
     }
 }

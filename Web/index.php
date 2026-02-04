@@ -91,11 +91,19 @@ function contarComentarios($conexion, int $idPublicacion): int { // Devuelve cu�
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Índice</title>
+
+  <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+  </link>
+
   <link rel="stylesheet" href="estilos/estilos.css">
   <link rel="stylesheet" href="estilos/index.css">
 
   <link rel="icon" href="estilos/imagenes/sin_fondo_con_letras.png">
+   
 </head>
 <body>
 
@@ -107,27 +115,22 @@ function contarComentarios($conexion, int $idPublicacion): int { // Devuelve cu�
     </div>
 
     <nav id="sidebar-nav">
-      <ul class="nav-section">
-        <li class="nav-item active">Home</li>
-        <li class="nav-item">
+      <div class="nav-section">
+        <p class="nav-item active">Home</li>
+        <p class="nav-item">
           <a href="usuarios.php">Usuarios</a>
-        </li>
-        <li class="nav-item">
-          <a href="chat.php">
-            Chat
-            <?php if ($noLeidosTotal > 0): ?> <!-- Si hay mensajes no leídos en total, muestro el numerito -->
-              <span class="btn-chat"><?= (int)$noLeidosTotal ?></span> <!-- Fuerzo a int para imprimir solo número -->
-            <?php endif; ?>
-          </a>
-        </li>
-      </ul>
+        </p>
+        <p class="nav-item">
+          <a href="chat.php">Chat</a>
+        </p>
+      </div> 
 
       <div class="nav-title">Account</div>
-      <ul class="nav-section">
-        <li class="nav-item">Hola, <?= h($_SESSION['usuario']) ?></li> <!-- Muestro el nombre del usuario logueado escapado -->
-        <li class="nav-item"><a href="perfil.php">Mi perfil</a></li>
-        <li class="nav-item"><a href="logout.php">Cerrar sesión</a></li>
-      </ul>
+      <div class="nav-section">
+        <p class="nav-item">Hola, <?= h($_SESSION['usuario']) ?></li> 
+        <p class="nav-item"><a href="perfil.php">Mi perfil</a></li>
+        <p class="nav-item"><a href="logout.php">Cerrar sesión</a></li>
+      </div>
     </nav>
   </aside>
 

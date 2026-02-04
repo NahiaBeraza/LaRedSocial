@@ -1,83 +1,83 @@
 <?php
-require_once __DIR__ . "/php/require_login.php";
-require_once __DIR__ . "/php/conexion.php";
+require_once __DIR__ . "/php/require_login.php"; // Obliga a que el usuario esté logueado para ver perfiles
+require_once __DIR__ . "/php/conexion.php"; // Incluye la conexión a la base de datos
 
-$conexion = conexionBD();
-$idYo = (int)$_SESSION['id_usuario'];
+$conexion = conexionBD(); // Se crea la conexión con la base de datos
+$idYo = (int)$_SESSION['id_usuario']; // Se guarda el id del usuario logueado
 
 // --- Qué perfil se está viendo ---
-$idPerfil = isset($_GET['id']) ? (int)$_GET['id'] : $idYo;
-if ($idPerfil <= 0) $idPerfil = $idYo;
+$idPerfil = isset($_GET['id']) ? (int)$_GET['id'] : $idYo; // Id del perfil que se quiere ver (o el mío por defecto)
+if ($idPerfil <= 0) $idPerfil = $idYo; // Seguridad extra por si llega un id inválido
 
-$esMiPerfil = ($idPerfil === $idYo);
+$esMiPerfil = ($idPerfil === $idYo); // Indica si estoy viendo mi propio perfil
 
 // modal: followers | following | ''
-$modal = $_GET['modal'] ?? '';
-if (!in_array($modal, ['followers','following'], true)) $modal = '';
+$modal = $_GET['modal'] ?? ''; // Controla si se abre el modal de seguidores o seguidos
+if (!in_array($modal, ['followers','following'], true)) $modal = ''; // Solo se permiten esos dos valores
 
-function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); }
+function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, "UTF-8"); } // Escapa texto para evitar XSS
 
 // --- Cargar usuario del perfil ---
 $sqlU = "SELECT id_usuario, nombre_usuario, correo, biografia, foto_perfil
          FROM usuario
-         WHERE id_usuario = ?";
+         WHERE id_usuario = ?"; // Obtiene los datos básicos del usuario cuyo perfil se está viendo
 $stmtU = mysqli_prepare($conexion, $sqlU);
 mysqli_stmt_bind_param($stmtU, "i", $idPerfil);
 mysqli_stmt_execute($stmtU);
 $resU = mysqli_stmt_get_result($stmtU);
-$u = mysqli_fetch_assoc($resU);
+$u = mysqli_fetch_assoc($resU); // Guarda los datos del usuario del perfil
 mysqli_stmt_close($stmtU);
 
-if (!$u) {
-  header("Location: usuarios.php");
+if (!$u) { // Si el usuario no existe
+  header("Location: usuarios.php"); // Redirige a la lista de usuarios
   exit();
 }
 
 // --- Contadores seguidores/seguidos ---
-$sqlFollowers = "SELECT COUNT(*) c FROM seguidor WHERE id_seguido = ?";
+$sqlFollowers = "SELECT COUNT(*) c FROM seguidor WHERE id_seguido = ?"; // Cuenta cuántos usuarios siguen a este perfil
 $stmtF = mysqli_prepare($conexion, $sqlFollowers);
 mysqli_stmt_bind_param($stmtF, "i", $idPerfil);
 mysqli_stmt_execute($stmtF);
-$followers = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($stmtF))['c'];
+$followers = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($stmtF))['c']; // Número total de seguidores
 mysqli_stmt_close($stmtF);
 
-$sqlFollowing = "SELECT COUNT(*) c FROM seguidor WHERE id_usuario = ?";
+$sqlFollowing = "SELECT COUNT(*) c FROM seguidor WHERE id_usuario = ?"; // Cuenta a cuántos usuarios sigue este perfil
 $stmtG = mysqli_prepare($conexion, $sqlFollowing);
 mysqli_stmt_bind_param($stmtG, "i", $idPerfil);
 mysqli_stmt_execute($stmtG);
-$following = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($stmtG))['c'];
+$following = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($stmtG))['c']; // Número total de seguidos
 mysqli_stmt_close($stmtG);
 
 // --- ¿Yo lo sigo? (solo si no es mi perfil) ---
-$yoLoSigo = 0;
+$yoLoSigo = 0; // Flag para saber si yo sigo a este usuario
 if (!$esMiPerfil) {
-  $sqlS = "SELECT 1 FROM seguidor WHERE id_usuario = ? AND id_seguido = ? LIMIT 1";
+  $sqlS = "SELECT 1 FROM seguidor WHERE id_usuario = ? AND id_seguido = ? LIMIT 1"; // Comprueba si existe la relación de seguimiento entre yo y este perfil
   $stmtS = mysqli_prepare($conexion, $sqlS);
   mysqli_stmt_bind_param($stmtS, "ii", $idYo, $idPerfil);
   mysqli_stmt_execute($stmtS);
   mysqli_stmt_store_result($stmtS);
-  $yoLoSigo = (mysqli_stmt_num_rows($stmtS) === 1) ? 1 : 0;
+  $yoLoSigo = (mysqli_stmt_num_rows($stmtS) === 1) ? 1 : 0; // Si hay fila, lo sigo
   mysqli_stmt_close($stmtS);
 }
 
 // --- Foto del perfil que se está viendo ---
-$foto = $u['foto_perfil'] ?? '';
-$srcFoto = (!empty($foto)) ? "uploads/perfiles/" . h($foto) : "";
+$foto = $u['foto_perfil'] ?? ''; // Foto de perfil del usuario visto
+$srcFoto = (!empty($foto)) ? "uploads/perfiles/" . h($foto) : ""; // Construye la ruta si existe foto
 
 // --- Foto del usuario logueado para el avatar del topbar ---
-$miFoto = '';
-$sqlFoto = "SELECT foto_perfil FROM usuario WHERE id_usuario = ?";
+$miFoto = ''; // Foto del usuario logueado
+$sqlFoto = "SELECT foto_perfil FROM usuario WHERE id_usuario = ?"; // Obtiene la foto del usuario logueado
 $stmtFoto = mysqli_prepare($conexion, $sqlFoto);
 mysqli_stmt_bind_param($stmtFoto, "i", $idYo);
 mysqli_stmt_execute($stmtFoto);
 $resFoto = mysqli_stmt_get_result($stmtFoto);
-if ($rowFoto = mysqli_fetch_assoc($resFoto)) $miFoto = $rowFoto['foto_perfil'] ?? '';
+if ($rowFoto = mysqli_fetch_assoc($resFoto)) $miFoto = $rowFoto['foto_perfil'] ?? ''; // Guarda la foto si existe
 mysqli_stmt_close($stmtFoto);
 
-$miAvatarStyle = "background:#ccc;";
+$miAvatarStyle = "background:#ccc;"; // Estilo por defecto si no hay foto
 if (!empty($miFoto)) {
   $miAvatarStyle = "background-image:url('uploads/perfiles/" . h($miFoto) . "');"
-                 . "background-size:cover;background-position:center;";
+                 . "background-size:cover;background-position:center;"; // Estilo del avatar con imagen
 }
 
 /* ===================== PUBLICACIONES DEL PERFIL ===================== */
@@ -99,25 +99,25 @@ LEFT JOIN reaccion r ON r.id_publicacion = p.id_publicacion
 WHERE p.id_usuario = ? 
 GROUP BY p.id_publicacion
 ORDER BY p.fecha_publicacion DESC
-";
+"; // Obtiene todas las publicaciones del perfil con datos del usuario y el total de reacciones
 $stmtP = mysqli_prepare($conexion, $sqlP);
 mysqli_stmt_bind_param($stmtP, "i", $idPerfil);
 mysqli_stmt_execute($stmtP);
 $resP = mysqli_stmt_get_result($stmtP);
-$pubsPerfil = [];
+$pubsPerfil = []; // Array donde se guardan las publicaciones del perfil
 while ($row = mysqli_fetch_assoc($resP)) $pubsPerfil[] = $row;
 mysqli_stmt_close($stmtP);
 
 // Mi reacción en un post
 function miReaccion($conexion, int $idYo, int $idPublicacion): string {
-  $sql = "SELECT tipo FROM reaccion WHERE id_usuario = ? AND id_publicacion = ? LIMIT 1";
+  $sql = "SELECT tipo FROM reaccion WHERE id_usuario = ? AND id_publicacion = ? LIMIT 1"; // Devuelve el tipo de reacción que hice yo en una publicación
   $stmt = mysqli_prepare($conexion, $sql);
   mysqli_stmt_bind_param($stmt, "ii", $idYo, $idPublicacion);
   mysqli_stmt_execute($stmt);
   $res = mysqli_stmt_get_result($stmt);
   $row = mysqli_fetch_assoc($res);
   mysqli_stmt_close($stmt);
-  return $row["tipo"] ?? "";
+  return $row["tipo"] ?? ""; // Si no hay reacción, devuelve vacío
 }
 
 // Resumen por tipo SOLO >0
@@ -125,12 +125,12 @@ function resumenReacciones($conexion, int $idPublicacion): array {
   $sql = "SELECT tipo, COUNT(*) AS total
           FROM reaccion
           WHERE id_publicacion = ?
-          GROUP BY tipo";
+          GROUP BY tipo"; // Obtiene el número de reacciones agrupadas por tipo para una publicación
   $stmt = mysqli_prepare($conexion, $sql);
   mysqli_stmt_bind_param($stmt, "i", $idPublicacion);
   mysqli_stmt_execute($stmt);
   $res = mysqli_stmt_get_result($stmt);
-  $out = [];
+  $out = []; // Array asociativo tipo => total
   while ($row = mysqli_fetch_assoc($res)) $out[$row["tipo"]] = (int)$row["total"];
   mysqli_stmt_close($stmt);
   return $out;
@@ -138,20 +138,20 @@ function resumenReacciones($conexion, int $idPublicacion): array {
 
 // Comentarios: Solo count
 function contarComentarios($conexion, int $idPublicacion): int {
-  $sql = "SELECT COUNT(*) AS total FROM comentario WHERE id_publicacion = ?";
+  $sql = "SELECT COUNT(*) AS total FROM comentario WHERE id_publicacion = ?"; // Cuenta cuántos comentarios tiene una publicación
   $stmt = mysqli_prepare($conexion, $sql);
   mysqli_stmt_bind_param($stmt, "i", $idPublicacion);
   mysqli_stmt_execute($stmt);
   $res = mysqli_stmt_get_result($stmt);
   $row = mysqli_fetch_assoc($res);
   mysqli_stmt_close($stmt);
-  return (int)($row["total"] ?? 0);
+  return (int)($row["total"] ?? 0); // Devuelve el total de comentarios
 }
 
 /* ===================== MODALES: seguidores / seguidos ===================== */
-$listaModal = [];
-$esFollowers = ($modal === 'followers');
-$esFollowing = ($modal === 'following');
+$listaModal = []; // Lista de usuarios que se mostrará en el modal
+$esFollowers = ($modal === 'followers'); // Indica si el modal es de seguidores
+$esFollowing = ($modal === 'following'); // Indica si el modal es de seguidos
 
 if ($modal !== '') {
   if ($esFollowers) {
@@ -164,7 +164,7 @@ if ($modal !== '') {
       LEFT JOIN seguidor s2 ON s2.id_usuario = ? AND s2.id_seguido = u.id_usuario
       WHERE s.id_seguido = ?
       ORDER BY u.nombre_usuario ASC
-    ";
+    "; // Obtiene los seguidores del perfil y marca si yo sigo a cada uno
     $stmtL = mysqli_prepare($conexion, $sqlL);
     mysqli_stmt_bind_param($stmtL, "ii", $idYo, $idPerfil);
   } else {
@@ -177,14 +177,14 @@ if ($modal !== '') {
       LEFT JOIN seguidor s2 ON s2.id_usuario = ? AND s2.id_seguido = u.id_usuario
       WHERE s.id_usuario = ?
       ORDER BY u.nombre_usuario ASC
-    ";
+    "; // Obtiene a quién sigue el perfil y marca si yo también sigo a esos usuarios
     $stmtL = mysqli_prepare($conexion, $sqlL);
     mysqli_stmt_bind_param($stmtL, "ii", $idYo, $idPerfil);
   }
 
   mysqli_stmt_execute($stmtL);
   $resL = mysqli_stmt_get_result($stmtL);
-  while ($row = mysqli_fetch_assoc($resL)) $listaModal[] = $row;
+  while ($row = mysqli_fetch_assoc($resL)) $listaModal[] = $row; // Guarda los usuarios para el modal
   mysqli_stmt_close($stmtL);
 }
 /* ====================================================================== */
