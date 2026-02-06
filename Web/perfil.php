@@ -219,7 +219,7 @@ $orden = ["LOVE","LAUGH","WOW","SAD","LIKE"];
       <ul class="nav-section">
         <li class="nav-item"><a href="index.php" style="color:inherit;text-decoration:none;">Home</a></li>
         <li class="nav-item"><a href="usuarios.php" style="color:inherit;text-decoration:none;">Usuarios</a></li>
-        <li class="nav-item active">Perfil</li>
+        <li class="nav-item"><a href="chat.php" style="color:inherit;text-decoration:none;">Chat</a></li>
       </ul>
 
       <div class="nav-title">Account</div>

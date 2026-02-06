@@ -393,7 +393,137 @@ body.modal-open{
 }
 
 
+/**** GRID AREA PARA QUE SE VEA BIEN EL MENÚ*******************/
+/* =======================================================
+   INDEX RESPONSIVE FIX con GRID AREAS (SOLO index.php)
+   Objetivo:
+   - Sidebar arriba (menú horizontal)
+   - Feed debajo
+   - Right panel (Recent Posts) al final
+   ======================================================= */
 
+@media (max-width: 1100px){
+
+  /* 1) Layout principal: SIDEBAR arriba + MAIN debajo */
+  #app{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "sidebar"
+      "main";
+    gap: 15px !important;
+
+    height: auto !important;
+    min-height: 100vh;
+    padding: 10px !important;
+    overflow-x: hidden !important;
+  }
+
+  #sidebar{
+    grid-area: sidebar;
+    width: 100% !important;
+    height: auto !important;
+
+    position: relative !important;
+    transform: none !important;
+    left: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+
+    border-radius: 20px !important;
+    padding: 15px !important;
+    margin: 0 !important;
+  }
+
+  /* Si quieres mantener el logo en móvil, borra estas 2 líneas */
+  #sidebar-logo{ display: none !important; }
+
+  #main-layout{
+    grid-area: main;
+    width: 100% !important;
+    min-width: 0 !important;
+    display: block !important;
+  }
+
+  /* 2) Topbar normal arriba del contenido */
+  #topbar{
+    width: 100% !important;
+    margin: 0 0 15px 0 !important;
+    height: auto !important;
+    padding: 15px !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* 3) Content: FEED arriba + RIGHT PANEL abajo */
+  #content{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "feed"
+      "right";
+    gap: 15px !important;
+
+    overflow: visible !important;
+  }
+
+  #feed{
+    grid-area: feed;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+  }
+
+  #right-panel{
+    grid-area: right;
+    width: 100% !important;
+    min-width: 0 !important;
+    display: block !important;
+    order: initial !important;
+    margin: 0 !important;
+  }
+
+  /* 4) Menú horizontal del sidebar (botones en fila) */
+  #sidebar-nav{
+    overflow: visible !important;
+  }
+
+  #sidebar .nav-section{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+
+  /* Title ocupa línea completa */
+  #sidebar .nav-title{
+    width: 100% !important;
+    margin: 14px 0 10px !important;
+  }
+
+  /* Botones compactos y centrados */
+  #sidebar .nav-item{
+    flex: 0 0 auto !important;
+    width: auto !important;
+    padding: 10px 12px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    transform: none !important; /* quita el desplazamiento en móvil */
+  }
+
+  #sidebar .nav-item a{
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+  }
+
+  #sidebar .nav-item.active{
+    transform: none !important;
+  }
+}
 
 
 /*******************************************************************************/ 
@@ -419,6 +549,9 @@ body.modal-open{
     .post-media img {
         max-height: 50vh !important; /* Ajusta la foto para que no ocupe toda la pantalla */
     }
+    #sidebar .nav-title {
+      display: none !important;
+      }
 }
 
 /* =======================================================
@@ -435,35 +568,6 @@ body.modal-open{
         overflow-x: hidden;
     }
 
-    /* 2. El Sidebar: se convierte en una caja superior */
-    #sidebar {
-        width: 100% !important;
-        display: block !important; /* Forzamos visibilidad */
-        position: relative !important;
-        margin-bottom: 20px !important;
-        padding: 20px !important;
-        height: auto !important;
-        box-shadow: var(--sh-caja);
-    }
-
-    /* 3. El Menú: Lo ponemos en horizontal para que no ocupe tanto alto */
-    #sidebar nav {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 10px !important;
-        justify-content: space-around !important;
-    }
-
-    /* 4. Estilo de botones en móvil para que no se pisen con la foto */
-    #sidebar nav a {
-        background: #f1f5f9 !important;
-        padding: 8px 15px !important;
-        border-radius: 12px !important;
-        flex: 1 1 auto;
-        text-align: center;
-        font-size: 13px !important;
-        border: 1px solid rgba(0,0,0,0.05);
-    }
 
     /* 5. Ajuste para que el contenido no se pegue al menú */
     #main-layout {
@@ -482,14 +586,3 @@ body.modal-open{
     }
 }
 
-/* Arreglo extra para el INDEX (Recent Posts) */
-@media (max-width: 1100px) {
-    #content {
-        display: flex !important;
-        flex-direction: column !important;
-    }
-    #right-panel {
-        width: 100% !important;
-        order: 2; /* Posts recientes debajo del feed */
-    }
-}

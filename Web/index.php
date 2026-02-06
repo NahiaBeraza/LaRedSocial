@@ -110,29 +110,27 @@ function contarComentarios($conexion, int $idPublicacion): int { // Devuelve cu�
 <div id="app">
 
   <aside id="sidebar">
-    <div id="sidebar-logo">
-      <img src="estilos/imagenes/sin_fondo_con_letras.png" alt="Logo" class="logo-img">
-    </div>
+  <div id="sidebar-logo">
+    <img src="estilos/imagenes/sin_fondo_con_letras.png" alt="Logo" class="logo-img">
+  </div>
 
-    <nav id="sidebar-nav">
-      <div class="nav-section">
-        <p class="nav-item active">Home</li>
-        <p class="nav-item">
-          <a href="usuarios.php">Usuarios</a>
-        </p>
-        <p class="nav-item">
-          <a href="chat.php">Chat</a>
-        </p>
-      </div> 
+  <nav id="sidebar-nav">
+    <ul class="nav-section">
+      <li class="nav-item active">Home</li>
+      <li class="nav-item"><a href="usuarios.php" style="color:inherit;text-decoration:none;">Usuarios</a></li>
+      <li class="nav-item"><a href="chat.php" style="color:inherit;text-decoration:none;">Chat</a></li>
+    </ul>
 
-      <div class="nav-title">Account</div>
-      <div class="nav-section">
-        <p class="nav-item">Hola, <?= h($_SESSION['usuario']) ?></li> 
-        <p class="nav-item"><a href="perfil.php">Mi perfil</a></li>
-        <p class="nav-item"><a href="logout.php">Cerrar sesión</a></li>
-      </div>
-    </nav>
-  </aside>
+    <div class="nav-title">Account</div>
+    <ul class="nav-section">
+      <li class="nav-item">Hola, <?= h($_SESSION['usuario']) ?></li>
+      <li class="nav-item"><a href="perfil.php" style="color:inherit;text-decoration:none;">Mi perfil</a></li>
+      <li class="nav-item"><a href="logout.php" style="color:inherit;text-decoration:none;">Cerrar sesión</a></li>
+    </ul>
+  </nav>
+</aside>
+
+
 
   <div id="main-layout">
 
